@@ -21,7 +21,6 @@
 package sample
 
 import (
-
 	"fmt"
 	"errors"
 	pd "github.com/hyperledger/fabric/protos/peer"
