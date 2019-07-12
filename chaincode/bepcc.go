@@ -98,10 +98,6 @@ func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	err = stub.PutState(requestId, requestJSONasBytes)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
 	return shim.Success(requestJSONasBytes)
 }
 
@@ -111,7 +107,11 @@ func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []str
 	}
 	requestId := args[0]
 	// check if the request exists
-	requestAsBytes, err := stub.GetState(requestId)
+	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	requestAsBytes, err := stub.GetState(requestKey)
 	if err != nil {
 		return shim.Error("The request does not exist")
 	}
@@ -171,7 +171,11 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	requestId := args[1]
 	responseId := args[2]
 	// check the user is the owner of the request
-	requestAsBytes, err := stub.GetState(requestId)
+	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	requestAsBytes, err := stub.GetState(requestKey)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -196,10 +200,6 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
-	if err != nil {
-		return shim.Error(err.Error())
-	}
 	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
 	if err != nil {
 		return shim.Error(err.Error())
@@ -209,10 +209,6 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 		return shim.Error(err.Error())
 	}
 	err = stub.PutState(userRequestKey, requestAsBytes)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	err = stub.PutState(requestId, requestAsBytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
