@@ -57,3 +57,7 @@ func (t *BepChaincode) CreateUser(stub shim.ChaincodeStubInterface, args []strin
 	return shim.Success(userJSONasBytes)
 }
 
+func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+	
+}
+
