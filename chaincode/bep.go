@@ -15,8 +15,26 @@ func (t *BepChaincode) Init(stub shim.ChaincodeStubInterface) pd.Response {
 
 func (t *BepChaincode) Invoke(stub shim.ChaincodeStubInterface) pd.Response {
 
-	fn, _ := stub.GetFunctionAndParameters()
-	fmt.Println("invoke is running " + fn)
+	fn, args := stub.GetFunctionAndParameters()
+	fmt.Println("invoke is running: " + fn)
+
+	if fn == "PushRequest" {
+		return t.PushRequest(stub, args)
+	} else if fn == "PushResponse" {
+		return t.PushResponse(stub, args)
+	} else if fn == "AcceptResponse" {
+		return t.AcceptResponse(stub, args)
+	} else if fn == "QueryAllRequest" {
+		return t.QueryAllRequest(stub, args)
+	} else if fn == "QueryRequestByUserId" {
+		return t.QueryRequestByUserId(stub, args)
+	} else if fn == "QueryResponseByUserId" {
+		return t.QueryResponseByUserId(stub, args)
+	} else if fn == "QueryBalanceByUserId" {
+		return t.QueryBalanceByUserId(stub, args)
+	} else if fn == "QueryResponseByRequestId" {
+		return t.QueryResponseByRequestId(stub, args)
+	}
 
 	fmt.Println("invoke did not find func: " + fn)
 	return shim.Error("Received unknown function invocation")
