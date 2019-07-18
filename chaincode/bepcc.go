@@ -79,7 +79,7 @@ func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []stri
 		Status:         status,
 		CreateTime:     createTime,
 		ExpiredTime:    expiredTime,
-		AcceptResponse: nil,
+		AcceptResponse: "",
 		Responses:      nil,
 	}
 
@@ -87,7 +87,8 @@ func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
+	//userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
+	userRequestKey, err := stub.CreateCompositeKey(userId, []string{requestId})
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -269,9 +270,9 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 }
 
 /* Query all requests in the ledger */
-func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface) pd.Response {
 
-	resultIter, err := stub.GetStateByPartialCompositeKey("Request",[]string{"request",""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("Request", nil)
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
 	}
@@ -288,10 +289,9 @@ func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface, args []
 		}
 		// Add a comma before array members, suppress it for the first array member
 		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
+			buffer.WriteByte('\n')
 		}
 
-		// Record is a JSON object, so we write as-is
 		buffer.WriteString(string(queryResponse.Value))
 		bArrayMemberAlreadyWritten = true
 	}
@@ -305,7 +305,8 @@ func (t *BepChaincode) QueryRequestByUserId(stub shim.ChaincodeStubInterface, ar
 		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
 	}
 	useridAsString := args[0]
-	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request",[]string{useridAsString,""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request",[]string{useridAsString, ""})
+	//resultIter, err := stub.GetStateByPartialCompositeKey(useridAsString,[]string{""})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
 	}

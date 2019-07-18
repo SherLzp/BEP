@@ -25,7 +25,7 @@ func (t *BepChaincode) Invoke(stub shim.ChaincodeStubInterface) pd.Response {
 	} else if fn == "AcceptResponse" {
 		return t.AcceptResponse(stub, args)
 	} else if fn == "QueryAllRequest" {
-		return t.QueryAllRequest(stub, args)
+		return t.QueryAllRequest(stub)
 	} else if fn == "QueryRequestByUserId" {
 		return t.QueryRequestByUserId(stub, args)
 	} else if fn == "QueryResponseByUserId" {
