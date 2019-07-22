@@ -357,7 +357,7 @@ func (t *BepChaincode) QueryResponseByUserId(stub shim.ChaincodeStubInterface, a
 		}
 		// Add a comma before array members, suppress it for the first array member
 		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
+			buffer.WriteString("\n")
 		}
 
 		// Record is a JSON object, so we write as-is
@@ -387,7 +387,6 @@ func (t *BepChaincode) QueryBalanceByUserId(stub shim.ChaincodeStubInterface, ar
 		return shim.Error("Fail to unmarshal the user: " + err.Error())
 	}
 
-	fmt.Printf("Query Response:%s\n", string(userAsBytes))
 	return shim.Success([]byte(fmt.Sprintf("%f",usr.Balance)))
 }
 
@@ -417,7 +416,7 @@ func (t *BepChaincode) QueryResponseByRequestId(stub shim.ChaincodeStubInterface
 
 		// Add a comma before array members, suppress it for the first array member
 		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
+			buffer.WriteString("\n")
 		}
 
 		responseAsByte, err := json.Marshal(curRes)

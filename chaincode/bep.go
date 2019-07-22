@@ -18,7 +18,9 @@ func (t *BepChaincode) Invoke(stub shim.ChaincodeStubInterface) pd.Response {
 	fn, args := stub.GetFunctionAndParameters()
 	fmt.Println("invoke is running: " + fn)
 
-	if fn == "PushRequest" {
+	if fn == "CreateUser" {
+		return t.CreateUser(stub, args)
+	} else if fn == "PushRequest" {
 		return t.PushRequest(stub, args)
 	} else if fn == "PushResponse" {
 		return t.PushResponse(stub, args)
