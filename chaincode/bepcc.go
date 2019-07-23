@@ -246,8 +246,17 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 		return shim.Error(err.Error())
 	}
 
-	// reward the user
-	userAsBytes, err := stub.GetState(userId)
+	// reward the responser
+	responseAsBytes, err := stub.GetState(responseId)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	response := Response{}
+	err = json.Unmarshal(responseAsBytes, &response)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	userAsBytes, err := stub.GetState(response.Owner)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -305,7 +314,7 @@ func (t *BepChaincode) QueryRequestByUserId(stub shim.ChaincodeStubInterface, ar
 		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
 	}
 	useridAsString := args[0]
-	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request",[]string{useridAsString, ""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request", []string{useridAsString, ""})
 	//resultIter, err := stub.GetStateByPartialCompositeKey(useridAsString,[]string{""})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
@@ -340,7 +349,7 @@ func (t *BepChaincode) QueryResponseByUserId(stub shim.ChaincodeStubInterface, a
 		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
 	}
 	useridAsString := args[0]
-	resultIter, err := stub.GetStateByPartialCompositeKey("User_Response",[]string{useridAsString,""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("User_Response", []string{useridAsString, ""})
 	if err != nil {
 		return shim.Error("Failed to query response: " + err.Error())
 	}
@@ -387,7 +396,7 @@ func (t *BepChaincode) QueryBalanceByUserId(stub shim.ChaincodeStubInterface, ar
 		return shim.Error("Fail to unmarshal the user: " + err.Error())
 	}
 
-	return shim.Success([]byte(fmt.Sprintf("%f",usr.Balance)))
+	return shim.Success([]byte(fmt.Sprintf("%f", usr.Balance)))
 }
 
 /* Query all the responses by requestId */
