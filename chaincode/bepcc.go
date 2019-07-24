@@ -87,8 +87,8 @@ func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	//userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
-	userRequestKey, err := stub.CreateCompositeKey(userId, []string{requestId})
+	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
+	//userRequestKey, err := stub.CreateCompositeKey(userId, []string{requestId})
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -195,7 +195,6 @@ func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []str
 
 /* Push a accept to a specific response */
 func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
-
 	if len(args) != 3 {
 		return shim.Error("Incorrect number of arguments. Expecting 3(user_id, request_id, response_id)")
 	}
@@ -221,7 +220,7 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	// check the response exists
-	_, err = stub.GetState(responseId)
+	responseAsBytes, err := stub.GetState(responseId)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -247,10 +246,6 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	// reward the responser
-	responseAsBytes, err := stub.GetState(responseId)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
 	response := Response{}
 	err = json.Unmarshal(responseAsBytes, &response)
 	if err != nil {
@@ -271,7 +266,7 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	err = stub.PutState(userId, userAsBytes)
+	err = stub.PutState(response.Owner, userAsBytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -280,8 +275,7 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 
 /* Query all requests in the ledger */
 func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface) pd.Response {
-
-	resultIter, err := stub.GetStateByPartialCompositeKey("Request", nil)
+	resultIter, err := stub.GetStateByPartialCompositeKey("Request", []string{"request"})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
 	}
@@ -314,7 +308,7 @@ func (t *BepChaincode) QueryRequestByUserId(stub shim.ChaincodeStubInterface, ar
 		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
 	}
 	useridAsString := args[0]
-	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request", []string{useridAsString, ""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("User_Request", []string{useridAsString})
 	//resultIter, err := stub.GetStateByPartialCompositeKey(useridAsString,[]string{""})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
@@ -332,7 +326,7 @@ func (t *BepChaincode) QueryRequestByUserId(stub shim.ChaincodeStubInterface, ar
 		}
 		// Add a comma before array members, suppress it for the first array member
 		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
+			buffer.WriteString("\n")
 		}
 
 		// Record is a JSON object, so we write as-is
@@ -349,7 +343,7 @@ func (t *BepChaincode) QueryResponseByUserId(stub shim.ChaincodeStubInterface, a
 		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
 	}
 	useridAsString := args[0]
-	resultIter, err := stub.GetStateByPartialCompositeKey("User_Response", []string{useridAsString, ""})
+	resultIter, err := stub.GetStateByPartialCompositeKey("User_Response", []string{useridAsString})
 	if err != nil {
 		return shim.Error("Failed to query response: " + err.Error())
 	}
@@ -361,6 +355,7 @@ func (t *BepChaincode) QueryResponseByUserId(stub shim.ChaincodeStubInterface, a
 	bArrayMemberAlreadyWritten := false
 	for resultIter.HasNext() {
 		queryResponse, err := resultIter.Next()
+		fmt.Printf("user response: %s\n", queryResponse.Value)
 		if err != nil {
 			return shim.Error("Fail to get response: " + err.Error())
 		}
