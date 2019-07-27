@@ -2,8 +2,8 @@ package sample
 
 import (
 	"fmt"
-	"testing"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"testing"
 )
 
 func mockInit(t *testing.T, stub *shim.MockStub, args [][]byte) {

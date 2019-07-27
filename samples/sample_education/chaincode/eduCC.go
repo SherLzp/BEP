@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/protos/peer"
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"bytes"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/protos/peer"
 )
 
 const DOC_TYPE = "eduObj"
@@ -14,7 +14,7 @@ const DOC_TYPE = "eduObj"
 // args: education
 func PutEdu(stub shim.ChaincodeStubInterface, edu Education) ([]byte, bool) {
 
-	edu.ObjectType = DOC_TYPE
+	ObjectType = DOC_TYPE
 
 	b, err := json.Marshal(edu)
 	if err != nil {
@@ -22,7 +22,7 @@ func PutEdu(stub shim.ChaincodeStubInterface, edu Education) ([]byte, bool) {
 	}
 
 	// 保存edu状态
-	err = stub.PutState(edu.EntityID, b)
+	err = stub.PutState(EntityID, b)
 	if err != nil {
 		return nil, false
 	}
@@ -104,7 +104,7 @@ func (t *EducationChaincode) addEdu(stub shim.ChaincodeStubInterface, args []str
 	}
 
 	// 查重: 身份证号码必须唯一
-	_, exist := GetEduInfo(stub, edu.EntityID)
+	_, exist := GetEduInfo(stub, EntityID)
 	if exist {
 		return shim.Error("要添加的身份证号码已存在")
 	}
@@ -172,7 +172,7 @@ func (t *EducationChaincode) queryEduInfoByEntityID(stub shim.ChaincodeStubInter
 	}
 
 	// 获取历史变更数据
-	iterator, err := stub.GetHistoryForKey(edu.EntityID)
+	iterator, err := stub.GetHistoryForKey(EntityID)
 	if err != nil {
 		return shim.Error("根据指定的身份证号码查询对应的历史变更数据失败")
 	}
@@ -188,21 +188,21 @@ func (t *EducationChaincode) queryEduInfoByEntityID(stub shim.ChaincodeStubInter
 		}
 
 		var historyItem HistoryItem
-		historyItem.TxId = hisData.TxId
+		TxId = hisData.TxId
 		json.Unmarshal(hisData.Value, &hisEdu)
 
 		if hisData.Value == nil {
 			var empty Education
-			historyItem.Education = empty
+			Education = empty
 		}else {
-			historyItem.Education = hisEdu
+			Education = hisEdu
 		}
 
 		historys = append(historys, historyItem)
 
 	}
 
-	edu.Historys = historys
+	Historys = historys
 
 	// 返回
 	result, err := json.Marshal(edu)
@@ -226,21 +226,21 @@ func (t *EducationChaincode) updateEdu(stub shim.ChaincodeStubInterface, args []
 	}
 
 	// 根据身份证号码查询信息
-	result, bl := GetEduInfo(stub, info.EntityID)
+	result, bl := GetEduInfo(stub, EntityID)
 	if !bl{
 		return shim.Error("根据身份证号码查询信息时发生错误")
 	}
 
-	result.EnrollDate = info.EnrollDate
-	result.GraduationDate = info.GraduationDate
-	result.SchoolName = info.SchoolName
-	result.Major = info.Major
-	result.QuaType = info.QuaType
-	result.Length = info.Length
-	result.Mode = info.Mode
-	result.Level = info.Level
-	result.Graduation = info.Graduation
-	result.CertNo = info.CertNo;
+	EnrollDate = EnrollDate
+	GraduationDate = GraduationDate
+	SchoolName = SchoolName
+	Major = Major
+	QuaType = QuaType
+	Length = Length
+	Mode = Mode
+	Level = Level
+	Graduation = Graduation
+	CertNo = CertNo;
 
 	_, bl = PutEdu(stub, result)
 	if !bl {

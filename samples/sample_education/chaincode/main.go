@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"fmt"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 )
 
@@ -20,15 +20,15 @@ func (t *EducationChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Respo
 	fun, args := stub.GetFunctionAndParameters()
 
 	if fun == "addEdu"{
-		return t.addEdu(stub, args)		// 添加信息
+		return addEdu(stub, args) // 添加信息
 	}else if fun == "queryEduByCertNoAndName" {
-		return t.queryEduByCertNoAndName(stub, args)		// 根据证书编号及姓名查询信息
+		return queryEduByCertNoAndName(stub, args) // 根据证书编号及姓名查询信息
 	}else if fun == "queryEduInfoByEntityID" {
-		return t.queryEduInfoByEntityID(stub, args)	// 根据身份证号码及姓名查询详情
+		return queryEduInfoByEntityID(stub, args) // 根据身份证号码及姓名查询详情
 	}else if fun == "updateEdu" {
-		return t.updateEdu(stub, args)		// 根据证书编号更新信息
+		return updateEdu(stub, args) // 根据证书编号更新信息
 	}else if fun == "delEdu"{
-		return t.delEdu(stub, args)	// 根据证书编号删除信息
+		return delEdu(stub, args) // 根据证书编号删除信息
 	}
 
 	return shim.Error("指定的函数名称错误")
