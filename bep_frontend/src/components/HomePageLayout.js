@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import {
   Button,
@@ -8,10 +7,11 @@ import {
   Menu,
   Responsive,
   Segment,
-  Visibility,
+  Visibility
 } from 'semantic-ui-react'
-import { Route, Link } from 'react-router-dom'
-import LoginForm from './LoginLayout';
+import { Link } from 'react-router-dom'
+import { userActions } from '../_actions';
+import { connect } from 'react-redux';
 
 // Heads up!
 // We using React Static to prerender our docs with server side rendering, this is a quite simple solution.
@@ -26,57 +26,13 @@ var footStyle = {
   padding: "15px"
 }
 
-/* eslint-disable react/no-multi-comp */
-/* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
- * such things.
- */
-const HomepageHeading = ({ mobile }) => (
-  <Container text>
-    <Header
-      as='h1'
-      content='Blob Exchange Platform'
-      inverted
-      style={{
-        fontSize: mobile ? '2em' : '4em',
-        fontWeight: 'normal',
-        marginBottom: 0,
-        marginTop: mobile ? '1.5em' : '3em',
-      }}
-    />
-    <Header
-      as='h2'
-      content='Exchange infomation anonymously'
-      inverted
-      style={{
-        fontSize: mobile ? '1.5em' : '1.7em',
-        fontWeight: 'normal',
-        marginTop: mobile ? '0.5em' : '1.5em',
-      }}
-    />
-    <LoginForm showBtn={<Button primary size='huge'>
-      Get Started
-      <Icon name='right arrow' />
-    </Button>}
-    />
-  </Container>
-)
-
-HomepageHeading.propTypes = {
-  mobile: PropTypes.bool,
-}
-
-/* Heads up!
- * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
- * It can be more complicated, but you can create really flexible markup.
- */
-class DesktopContainer extends Component {
+class HomePageLayout extends Component {
   state = {}
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
 
   render() {
-    const { children } = this.props
     const { fixed } = this.state
 
     return (
@@ -101,57 +57,68 @@ class DesktopContainer extends Component {
             >
               <Container>
                 <Menu.Item key="1" active>
-                  <Link to="/home">Home</Link>
+                  Home
                 </Menu.Item>
-                {/* <Menu.Item position='right'>
-                    <Button as={Link} to="/login" display={"none"} inverted={!fixed} onClick={this.onLogin}>
-                        Log in
-                    </Button>
-                    <Button as={Link} to="/signup" inverted={!fixed} onClick={this.onSignup} primary={fixed} style={{ marginLeft: '0.5em' }}>
-                        Sign up
-                    </Button>
-                </Menu.Item> */}
+                <Menu.Item position='right'>
+                  {this.props.username !== 'Sher' ? <Link to="/login"><Button inverted={!fixed}>Login / Signup</Button></Link> : <p>{this.props.username}</p>}
+
+                </Menu.Item>
               </Container>
             </Menu>
-            <HomepageHeading />
+            <Container text>
+              <Header
+                as='h1'
+                content='Blob Exchange Platform'
+                inverted
+                style={{
+                  fontSize: '4em',
+                  fontWeight: 'normal',
+                  marginBottom: 0,
+                  marginTop: '3em',
+                }}
+              />
+              <Header
+                as='h2'
+                content='Exchange infomation anonymously'
+                inverted
+                style={{
+                  fontSize: '1.7em',
+                  fontWeight: 'normal',
+                  marginTop: '1.5em',
+                }}
+              />
+              <Button primary size='huge'>
+                Get Started
+          <Icon name='right arrow' />
+              </Button>
+            </Container>
+          </Segment>
+          <Segment inverted vertical style={{ padding: '5em 0em' }}>
+            <Container>
+              <Segment
+                inverted
+                textAlign='center'
+                style={{ minHeight: 70, padding: '1em 0em' }}
+                vertical
+              >
+                <Header as="h3" style={footStyle}>
+                  Copyright © 2019.7 BEP Team.  All Rights Reserved.
+            </Header>
+              </Segment>
+            </Container>
           </Segment>
         </Visibility>
-        {children}
       </Responsive>
     )
   }
 }
 
-DesktopContainer.propTypes = {
-  children: PropTypes.node,
+function mapState(state) {
+  const { username } = state.authentication
+  return { username }
 }
 
-const ResponsiveContainer = ({ children }) => (
-  <div>
-    <DesktopContainer>{children}</DesktopContainer>
-  </div>
-)
+const connectHomePage = connect(mapState, null)(HomePageLayout)
 
-ResponsiveContainer.propTypes = {
-  children: PropTypes.node,
-}
 
-const HomepageLayout = () => (
-  <ResponsiveContainer>
-    <Segment inverted vertical style={{ padding: '5em 0em' }}>
-      <Container>
-        <Segment
-          inverted
-          textAlign='center'
-          style={{ minHeight: 70, padding: '1em 0em' }}
-          vertical
-        >
-          <Header as="h3" style={footStyle}>
-            Copyright © 2019.7 BEP Team.  All Rights Reserved.
-            </Header>
-        </Segment>
-      </Container>
-    </Segment>
-  </ResponsiveContainer>
-)
-export default HomepageLayout
+export { connectHomePage as HomePageLayout }
