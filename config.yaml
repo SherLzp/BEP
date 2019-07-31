@@ -1,0 +1,142 @@
+version: 1.0.0
+
+client:
+  organization: BEP
+
+  logging:
+    level: info
+  cryptoconfig:
+    path: ${GOPATH}/src/github.com/BEP/crypto-config
+  credentialStore:
+    path: "/tmp/state-store"
+    cryptoStore:
+      path: /tmp/msp
+  BCCSP:
+    security:
+      enabled: true
+      default:
+        provider: "SW"
+      hashAlgorithm: "SHA2"
+      softVerify: true
+      level: 256
+
+  tlsCerts:
+    # [Optional]. Use system certificate pool when connecting to peers, orderers (for negotiating TLS) Default: false
+    systemCertPool: false
+
+    # [Optional]. Client key and cert for TLS handshake with peers and orderers
+    client:
+      key:
+        path:
+      cert:
+        path:
+
+channels:
+  BEP:
+    peers:
+      peer0.OrgAlibaba.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+organizations:
+  OrgAlibaba:
+    mspid: OrgAlibabaMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/OrgAlibaba.BEP.com/users/{username}@OrgAlibaba.BEP.com/msp
+
+    peers:
+      - peer0.OrgAlibaba.BEP.com
+      - peer1.OrgAlibaba.BEP.com
+
+    certificateAuthorities:
+      - ca.OrgAlibaba.BEP.com
+
+orderers:
+  orderer.BEP.com:
+    url: localhost:7050
+
+    # these are standard properties defined by the gRPC library
+    # they will be passed in as-is to gRPC client constructor
+    grpcOptions:
+      ssl-target-name-override: orderer.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/ordererOrganizations/BEP.com/tlsca/tlsca.BEP.com-cert.pem
+#
+# List of peers to send various requests to, including endorsement, query
+# and event listener registration.
+#
+peers:
+  peer0.OrgAlibaba.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: peer0.OrgAlibaba.BEP.com:7051
+
+    grpcOptions:
+      ssl-target-name-override: peer0.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+
+  peer1.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: peer1.BEP.com:7151
+
+    grpcOptions:
+      ssl-target-name-override: peer1.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+
+certificateAuthorities:
+  ca.OrgAlibaba.BEP.com:
+    url: https://ca.OrgAlibaba.BEP.com:7054
+    tlsCACerts:
+      # Comma-Separated list of paths
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+      # Client key and cert for SSL handshake with Fabric CA
+      client:
+        key:
+          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/users/User1@OrgAlibaba.BEP.com/tls/client.key
+        cert:
+          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/users/User1@OrgAlibaba.BEP.com/tls/client.crt
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca.OrgAlibaba.BEP.com

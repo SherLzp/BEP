@@ -1,8 +1,3 @@
-# Copyright IBM Corp. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
-
 ---
 ################################################################################
 #
@@ -70,7 +65,7 @@ Organizations:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.org1.BEP.com
+            - Host: peer0.OrgAlibaba.BEP.com
               Port: 7051
 
     - &Org2
@@ -101,7 +96,7 @@ Organizations:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.org2.BEP.com
+            - Host: peer0.OrgBaidu.BEP.com
               Port: 9051
 
 ################################################################################
@@ -237,7 +232,8 @@ Orderer: &OrdererDefaults
     # Organizations is the list of orgs which are defined as participants on
     # the orderer side of the network
     Organizations:
-
+#        OrgAlibaba:
+#        OrgBaidu:
     # Policies defines the set of policies at this level of the config tree
     # For Orderer policies, their canonical path is
     #   /Channel/Orderer/<PolicyName>
@@ -308,12 +304,12 @@ Profiles:
             Capabilities:
                 <<: *OrdererCapabilities
         Consortiums:
-            SampleConsortium:
+            BEPConsortium:
                 Organizations:
                     - *Org1
                     - *Org2
     Channel:
-        Consortium: SampleConsortium
+        Consortium: BEP
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
@@ -323,7 +319,7 @@ Profiles:
             Capabilities:
                 <<: *ApplicationCapabilities
 
-    SampleDevModeKafka:
+    DevModeKafka:
         <<: *ChannelDefaults
         Capabilities:
             <<: *ChannelCapabilities
@@ -343,12 +339,12 @@ Profiles:
             Organizations:
             - <<: *OrdererOrg
         Consortiums:
-            SampleConsortium:
+            BEPConsortium:
                 Organizations:
                 - *Org1
                 - *Org2
 
-    SampleMultiNodeEtcdRaft:
+    MultiNodeEtcdRaft:
         <<: *ChannelDefaults
         Capabilities:
             <<: *ChannelCapabilities
@@ -393,7 +389,7 @@ Profiles:
             Organizations:
             - <<: *OrdererOrg
         Consortiums:
-            SampleConsortium:
+            BEPConsortium:
                 Organizations:
                 - *Org1
                 - *Org2
