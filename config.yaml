@@ -60,7 +60,7 @@ channels:
 
 organizations:
   OrgAlibaba:
-    mspid: OrgAlibabaMSP
+    mspid: OrgAlibaba
 
     # This org's MSP store (absolute path or relative to client.cryptoconfig)
     cryptoPath:  peerOrganizations/OrgAlibaba.BEP.com/users/{username}@OrgAlibaba.BEP.com/msp
@@ -72,7 +72,7 @@ organizations:
     certificateAuthorities:
       - ca.OrgAlibaba.BEP.com
   OrgBaidu:
-    mspid: OrgBaiduMSP
+    mspid: OrgBaidu
 
     # This org's MSP store (absolute path or relative to client.cryptoconfig)
     cryptoPath:  peerOrganizations/OrgBaidu.BEP.com/users/{username}@OrgBaidu.BEP.com/msp
@@ -86,8 +86,7 @@ organizations:
 
 orderers:
   orderer.BEP.com:
-    url: https://orderer.BEP.com:7050
-#    url: orderer.BEP.com:7050
+    url: 0.0.0.0:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
@@ -113,8 +112,7 @@ orderers:
 peers:
   peer0.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-#    url: peer0.OrgAlibaba.BEP.com:7051
-    url: https://peer0.OrgAlibaba.BEP.com:7051
+    url: 0.0.0.0:7051
 
     grpcOptions:
       ssl-target-name-override: peer0.OrgAlibaba.BEP.com
@@ -134,8 +132,7 @@ peers:
 
   peer1.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-#    url: peer1.OrgAlibaba.BEP.com:7151
-    url: https://peer1.OrgAlibaba.BEP.com:7151
+    url: 0.0.0.0:7151
 
     grpcOptions:
       ssl-target-name-override: peer1.OrgAlibaba.BEP.com
@@ -155,8 +152,7 @@ peers:
 
   peer0.OrgBaidu.BEP.com:
     # this URL is used to send endorsement and query requests
-#    url: peer0.OrgBaidu.BEP.com:7052
-    url: https://peer0.OrgBaidu.BEP.com:7052
+    url: 0.0.0.0:7052
 
     grpcOptions:
       ssl-target-name-override: peer0.OrgBaidu.BEP.com
@@ -176,8 +172,7 @@ peers:
 
   peer1.OrgBaidu.BEP.com:
     # this URL is used to send endorsement and query requests
-#    url: peer1.OrgBaidu.BEP.com:7152
-    url: https://peer1.OrgBaidu.BEP.com:7152
+    url: 0.0.0.0:7152
 
     grpcOptions:
       ssl-target-name-override: peer1.OrgBaidu.BEP.com
@@ -197,7 +192,7 @@ peers:
 
 certificateAuthorities:
   ca.OrgAlibaba.BEP.com:
-    url: https://ca.OrgAlibaba.BEP.com:7054
+    url: 0.0.0.0:7054
     tlsCACerts:
       # Comma-Separated list of paths
       path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
@@ -217,7 +212,7 @@ certificateAuthorities:
     caName: ca.OrgAlibaba.BEP.com
 
   ca.OrgBaidu.BEP.com:
-    url: https://ca.OrgBaidu.BEP.com:7055
+    url: 0.0.0.0:7055
     tlsCACerts:
       # Comma-Separated list of paths
       path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
@@ -236,39 +231,39 @@ certificateAuthorities:
     # [Optional] The optional name of the CA.
     caName: ca.OrgBaidu.BEP.com
 
-entityMatchers:
-  peer:
-    - pattern: peer0.OrgAlibaba.BEP.com
-      urlSubstitutionExp: peer0.OrgAlibaba.BEP.com:7051
-      sslTargetOverrideUrlSubstitutionExp: peer0.OrgAlibaba.BEP.com
-      mappedHost: peer0.OrgAlibaba.BEP.com
-
-    - pattern: peer1.OrgAlibaba.BEP.com
-      urlSubstitutionExp: peer1.OrgAlibaba.BEP.com:7151
-      sslTargetOverrideUrlSubstitutionExp: peer1.OrgAlibaba.BEP.com
-      mappedHost: peer1.OrgAlibaba.BEP.com
-
-    - pattern: peer0.OrgBaidu.BEP.com
-      urlSubstitutionExp: peer0.OrgBaidu.BEP.com:7052
-      sslTargetOverrideUrlSubstitutionExp: peer0.OrgBaidu.BEP.com
-      mappedHost: peer0.OrgBaidu.BEP.com
-
-    - pattern: peer1.OrgBaidu.BEP.com
-      urlSubstitutionExp: peer1.OrgBaidu.BEP.com:7152
-      sslTargetOverrideUrlSubstitutionExp: peer1.OrgBaidu.BEP.com
-      mappedHost: peer1.OrgBaidu.BEP.com
-
-  orderer:
-    - pattern: orderer.BEP.com
-      urlSubstitutionExp: orderer.BEP.com:7050
-      sslTargetOverrideUrlSubstitutionExp: orderer.BEP.com
-      mappedHost: orderer.BEP.com
-
-  certificateAuthority:
-    - pattern: ca.OrgAlibaba.BEP.com
-      urlSubstitutionExp: ca.OrgAlibaba.BEP.com:7054
-      mappedHost: ca.OrgAlibaba.BEP.com
-
-    - pattern: ca.OrgBaidu.BEP.com
-      urlSubstitutionExp: ca.OrgBaidu.BEP.com:7055
-      mappedHost: ca.OrgBaidu.BEP.com
+#entityMatchers:
+#  peer:
+#    - pattern: peer0.OrgAlibaba.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7051
+#      sslTargetOverrideUrlSubstitutionExp: peer0.OrgAlibaba.BEP.com
+#      mappedHost: peer0.OrgAlibaba.BEP.com
+#
+#    - pattern: peer1.OrgAlibaba.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7151
+#      sslTargetOverrideUrlSubstitutionExp: peer1.OrgAlibaba.BEP.com
+#      mappedHost: peer1.OrgAlibaba.BEP.com
+#
+#    - pattern: peer0.OrgBaidu.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7052
+#      sslTargetOverrideUrlSubstitutionExp: peer0.OrgBaidu.BEP.com
+#      mappedHost: peer0.OrgBaidu.BEP.com
+#
+#    - pattern: peer1.OrgBaidu.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7152
+#      sslTargetOverrideUrlSubstitutionExp: peer1.OrgBaidu.BEP.com
+#      mappedHost: peer1.OrgBaidu.BEP.com
+#
+#  orderer:
+#    - pattern: orderer.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7050
+#      sslTargetOverrideUrlSubstitutionExp: orderer.BEP.com
+#      mappedHost: orderer.BEP.com
+#
+#  certificateAuthority:
+#    - pattern: ca.OrgAlibaba.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7054
+#      mappedHost: ca.OrgAlibaba.BEP.com
+#
+#    - pattern: ca.OrgBaidu.BEP.com
+#      urlSubstitutionExp: 0.0.0.0:7055
+#      mappedHost: ca.OrgBaidu.BEP.com

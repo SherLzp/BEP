@@ -17,7 +17,7 @@ func main() {
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
 
 		// Chaincode parameters
-		ChainCodeID:     "blob exchange system",
+		ChainCodeID:     "bep",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/BEP/chaincode/",
 
