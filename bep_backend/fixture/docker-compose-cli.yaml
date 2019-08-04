@@ -69,7 +69,7 @@ services:
       - FABRIC_LOGGING_SPEC=INFO #日志级别,critical,error,warning,notice,info,debug从高到低
       - CORE_PEER_ID=cli #当前节点的ID即名字
       - CORE_PEER_ADDRESS=peer0.OrgAlibaba.BEP.com:7051 #连接peer节点的地址
-      - CORE_PEER_LOCALMSPID=OrgAlibabaMSP #连接peer节点所属的组织
+      - CORE_PEER_LOCALMSPID=OrdererOrg #连接peer节点所属的组织
       - CORE_PEER_TLS_ENABLED=true #是否使用TLS加密,true时下面的3个文件才生效
       - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/OrgAlibaba.BEP.com/peers/peer0.OrgAlibaba.BEP.com/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/OrgAlibaba.BEP.com/peers/peer0.OrgAlibaba.BEP.com/tls/server.key
