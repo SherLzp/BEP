@@ -33,6 +33,9 @@ client:
 
 channels:
   bepchannel:
+#    orderers:
+#      orderer.BEP.com:
+
     peers:
       peer0.OrgAlibaba.BEP.com:
         endorsingPeer: true

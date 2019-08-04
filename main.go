@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/BEP/bep_backend/fabric-sdk"
+	"github.com/BEP/bep_backend/fabric-sdk-go"
 	"os"
 )
 
@@ -14,7 +14,7 @@ func main() {
 
 		// Channel parameters
 		ChannelID:     "bepchannel",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/bep_backend/channel-artifacts/channel.tx",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
 
 		// Chaincode parameters
 		ChainCodeID:     "blob exchange system",
