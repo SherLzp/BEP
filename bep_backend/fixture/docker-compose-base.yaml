@@ -12,7 +12,7 @@ services:
     image: hyperledger/fabric-orderer
     environment:
       - ORDERER_GENERAL_LOGLEVEL=INFO
-      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
+      - ORDERER_GENERAL_LISTENADDRESS=127.0.0.1 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
       - ORDERER_GENERAL_GENESISMETHOD=file #生成创始区块的数据来源
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block #来自具体哪个文件
       - ORDERER_GENERAL_LOCALMSPID=OrgAlibaba #当前节点属于哪个组织ID
@@ -39,11 +39,10 @@ services:
       service: peer-base
     environment:
       - CORE_PEER_ID=peer0.OrgAlibaba.BEP.com
-      - CORE_PEER_ADDRESS=peer0.OrgAlibaba.BEP.com:7051
+      - CORE_PEER_ADDRESS=peer0.OrgAlibaba.BEP.com:7051 # only needed for the client code
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.OrgAlibaba.BEP.com:7061
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7061
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.OrgAlibaba.BEP.com:7151
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.OrgAlibaba.BEP.com:7051
       - CORE_PEER_LOCALMSPID=OrgAlibaba
     volumes:
@@ -89,7 +88,6 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=peer0.OrgBaidu.BEP.com:7062
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7062
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.OrgBaidu.BEP.com:7052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.OrgBaidu.BEP.com:7152
       - CORE_PEER_LOCALMSPID=OrgBaidu
     volumes:
         - /var/run/:/host/var/run/
