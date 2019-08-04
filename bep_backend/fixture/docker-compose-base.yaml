@@ -12,7 +12,7 @@ services:
     image: hyperledger/fabric-orderer
     environment:
       - ORDERER_GENERAL_LOGLEVEL=INFO
-      - ORDERER_GENERAL_LISTENADDRESS=127.0.0.1 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
       - ORDERER_GENERAL_GENESISMETHOD=file #生成创始区块的数据来源
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block #来自具体哪个文件
       - ORDERER_GENERAL_LOCALMSPID=OrgAlibaba #当前节点属于哪个组织ID

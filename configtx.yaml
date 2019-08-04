@@ -304,7 +304,7 @@ Profiles:
             Capabilities:
                 <<: *OrdererCapabilities
         Consortiums:
-            BEPConsortium:
+            BEP:
                 Organizations:
                     - *OrgAlibaba
                     - *OrgBaidu
@@ -339,7 +339,7 @@ Profiles:
             Organizations:
             - <<: *OrdererOrg
         Consortiums:
-            BEPConsortium:
+            BEP:
                 Organizations:
                 - *OrgAlibaba
                 - *OrgBaidu
@@ -389,7 +389,7 @@ Profiles:
             Organizations:
             - <<: *OrdererOrg
         Consortiums:
-            BEPConsortium:
+            BEP:
                 Organizations:
                 - *OrgAlibaba
                 - *OrgBaidu
