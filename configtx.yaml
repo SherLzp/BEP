@@ -36,7 +36,7 @@ Organizations:
                 Type: Signature
                 Rule: "OR('OrdererMSP.admin')"
 
-    - &Org1
+    - &OrgAlibaba
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
         Name: OrgAlibaba
@@ -68,7 +68,7 @@ Organizations:
             - Host: peer0.OrgAlibaba.BEP.com
               Port: 7051
 
-    - &Org2
+    - &OrgBaidu
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
         Name: OrgBaidu
@@ -97,7 +97,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.OrgBaidu.BEP.com
-              Port: 9051
+              Port: 7052
 
 ################################################################################
 #
@@ -306,16 +306,16 @@ Profiles:
         Consortiums:
             BEPConsortium:
                 Organizations:
-                    - *Org1
-                    - *Org2
+                    - *OrgAlibaba
+                    - *OrgBaidu
     Channel:
         Consortium: BEP
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org1
-                - *Org2
+                - *OrgAlibaba
+                - *OrgBaidu
             Capabilities:
                 <<: *ApplicationCapabilities
 
@@ -328,7 +328,7 @@ Profiles:
             OrdererType: kafka
             Kafka:
                 Brokers:
-                - kafka.example.com:9092
+                - kafka.BEP.com:9092
 
             Organizations:
             - *OrdererOrg
@@ -341,8 +341,8 @@ Profiles:
         Consortiums:
             BEPConsortium:
                 Organizations:
-                - *Org1
-                - *Org2
+                - *OrgAlibaba
+                - *OrgBaidu
 
     MultiNodeEtcdRaft:
         <<: *ChannelDefaults
@@ -391,5 +391,5 @@ Profiles:
         Consortiums:
             BEPConsortium:
                 Organizations:
-                - *Org1
-                - *Org2
+                - *OrgAlibaba
+                - *OrgBaidu

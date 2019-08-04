@@ -32,10 +32,25 @@ client:
         path:
 
 channels:
-  BEP:
+  bepchannel:
     peers:
       peer0.OrgAlibaba.BEP.com:
         endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.OrgAlibaba.BEP.com:
+        endorsingPeer: false
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.OrgBaidu.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.OrgBaidu.BEP.com:
+        endorsingPeer: false
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
@@ -53,10 +68,23 @@ organizations:
 
     certificateAuthorities:
       - ca.OrgAlibaba.BEP.com
+  OrgBaidu:
+    mspid: OrgBaiduMSP
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/OrgBaidu.BEP.com/users/{username}@OrgBaidu.BEP.com/msp
+
+    peers:
+      - peer0.OrgBaidu.BEP.com
+      - peer1.OrgBaidu.BEP.com
+
+    certificateAuthorities:
+      - ca.OrgBaidu.BEP.com
 
 orderers:
   orderer.BEP.com:
-    url: localhost:7050
+    url: https://orderer.BEP.com:7050
+#    url: orderer.BEP.com:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
@@ -82,10 +110,11 @@ orderers:
 peers:
   peer0.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-    url: peer0.OrgAlibaba.BEP.com:7051
+#    url: peer0.OrgAlibaba.BEP.com:7051
+    url: https://peer0.OrgAlibaba.BEP.com:7051
 
     grpcOptions:
-      ssl-target-name-override: peer0.BEP.com
+      ssl-target-name-override: peer0.OrgAlibaba.BEP.com
       # These parameters should be set in coordination with the keepalive policy on the server,
       # as incompatible settings can result in closing of connection.
       # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
@@ -100,12 +129,13 @@ peers:
       # Certificate location absolute path
       path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
 
-  peer1.BEP.com:
+  peer1.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-    url: peer1.BEP.com:7151
+#    url: peer1.OrgAlibaba.BEP.com:7151
+    url: https://peer1.OrgAlibaba.BEP.com:7151
 
     grpcOptions:
-      ssl-target-name-override: peer1.BEP.com
+      ssl-target-name-override: peer1.OrgAlibaba.BEP.com
       # These parameters should be set in coordination with the keepalive policy on the server,
       # as incompatible settings can result in closing of connection.
       # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
@@ -119,6 +149,48 @@ peers:
     tlsCACerts:
       # Certificate location absolute path
       path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+
+  peer0.OrgBaidu.BEP.com:
+    # this URL is used to send endorsement and query requests
+#    url: peer0.OrgBaidu.BEP.com:7052
+    url: https://peer0.OrgBaidu.BEP.com:7052
+
+    grpcOptions:
+      ssl-target-name-override: peer0.OrgBaidu.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
+
+  peer1.OrgBaidu.BEP.com:
+    # this URL is used to send endorsement and query requests
+#    url: peer1.OrgBaidu.BEP.com:7152
+    url: https://peer1.OrgBaidu.BEP.com:7152
+
+    grpcOptions:
+      ssl-target-name-override: peer1.OrgBaidu.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
 
 certificateAuthorities:
   ca.OrgAlibaba.BEP.com:
@@ -140,3 +212,60 @@ certificateAuthorities:
       enrollSecret: adminpw
     # [Optional] The optional name of the CA.
     caName: ca.OrgAlibaba.BEP.com
+
+  ca.OrgBaidu.BEP.com:
+    url: https://ca.OrgBaidu.BEP.com:7055
+    tlsCACerts:
+      # Comma-Separated list of paths
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
+      # Client key and cert for SSL handshake with Fabric CA
+      client:
+        key:
+          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/users/User1@OrgBaidu.BEP.com/tls/client.key
+        cert:
+          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/users/User1@OrgBaidu.BEP.com/tls/client.crt
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca.OrgBaidu.BEP.com
+
+entityMatchers:
+  peer:
+    - pattern: peer0.OrgAlibaba.BEP.com
+      urlSubstitutionExp: peer0.OrgAlibaba.BEP.com:7051
+      sslTargetOverrideUrlSubstitutionExp: peer0.OrgAlibaba.BEP.com
+      mappedHost: peer0.OrgAlibaba.BEP.com
+
+    - pattern: peer1.OrgAlibaba.BEP.com
+      urlSubstitutionExp: peer1.OrgAlibaba.BEP.com:7151
+      sslTargetOverrideUrlSubstitutionExp: peer1.OrgAlibaba.BEP.com
+      mappedHost: peer1.OrgAlibaba.BEP.com
+
+    - pattern: peer0.OrgBaidu.BEP.com
+      urlSubstitutionExp: peer0.OrgBaidu.BEP.com:7052
+      sslTargetOverrideUrlSubstitutionExp: peer0.OrgBaidu.BEP.com
+      mappedHost: peer0.OrgBaidu.BEP.com
+
+    - pattern: peer1.OrgBaidu.BEP.com
+      urlSubstitutionExp: peer1.OrgBaidu.BEP.com:7152
+      sslTargetOverrideUrlSubstitutionExp: peer1.OrgBaidu.BEP.com
+      mappedHost: peer1.OrgBaidu.BEP.com
+
+  orderer:
+    - pattern: orderer.BEP.com
+      urlSubstitutionExp: orderer.BEP.com:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.BEP.com
+      mappedHost: orderer.BEP.com
+
+  certificateAuthority:
+    - pattern: ca.OrgAlibaba.BEP.com
+      urlSubstitutionExp: ca.OrgAlibaba.BEP.com:7054
+      mappedHost: ca.OrgAlibaba.BEP.com
+
+    - pattern: ca.OrgBaidu.BEP.com
+      urlSubstitutionExp: ca.OrgBaidu.BEP.com:7055
+      mappedHost: ca.OrgBaidu.BEP.com
