@@ -119,3 +119,45 @@ services:
         - peer1.OrgBaidu.BEP.com:/var/hyperledger/production
     ports:
       - 7152:7152
+
+  ca.OrgAlibaba.BEP.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.OrgAlibaba.BEP.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgAlibaba.BEP.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgAlibaba.BEP.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.OrgAlibaba.BEP.com
+    networks:
+      default:
+        aliases:
+          - ca.OrgAlibaba.BEP.com
+
+  ca.OrgBaidu.BEP.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.OrgBaidu.BEP.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgBaidu.BEP.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/ed6278ed0da8c898df5e52e47c9bdd10ab26cc994a4c418c8726d6fca8287b98_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgBaidu.BEP.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e75a27c196eb0bce069f597751368101ea4348fcd17a654187c94144fac078ad_sk
+    ports:
+      - "7055:7055"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.OrgBaidu.BEP.com
+    networks:
+      default:
+        aliases:
+          - ca.OrgBaidu.BEP.com

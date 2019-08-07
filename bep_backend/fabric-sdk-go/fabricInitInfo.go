@@ -29,9 +29,9 @@ type FabricSetup struct {
 	OrdererID		string
 
 	OrgID           string		// 组织ID
-	OrgAdmin        string		// 组织的管理员用户
-	OrgName         string		// crypto-config.yaml ---> organizations ---> travle
-	UserName        string		// 组织的普通用户
+	OrgAdmin        string		// 组织的管理员用户名
+	OrgName         string		// 组织名称(same as ID)
+	UserName        string		// 组织的普通用户名
 
 	client          *channel.Client
 	admin           *resmgmt.Client
@@ -101,7 +101,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return errors.WithMessage(err, "failed to create chaincode package\n")
 	}
-	fmt.Println("ccPkg created")
+	fmt.Println("ccPkg Creation succeed!")
 
 	// Install example cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
@@ -109,24 +109,33 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return errors.WithMessage(err, "failed to install chaincode\n")
 	}
-	fmt.Println("Chaincode installed")
+	fmt.Println("Chaincode Installation Succeed!")
+	fmt.Println("Starting to initialize the chaincode......")
 
 	// Set up chaincode policy
-	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
+	ccPolicy := cauthdsl.SignedByAnyMember([]string{setup.OrgID})
 
-	resp, err := setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodeGoPath, Version: "0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
+	instantiateCCReq := resmgmt.InstantiateCCRequest{
+		Name: setup.ChainCodeID,
+		Path: setup.ChaincodePath,
+		Version: "0",
+		Args: [][]byte{[]byte("init")},
+		Policy: ccPolicy,
+	}
+	//resp, err := setup.admin.InstantiateCC(setup.ChannelID, instantiateCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
+	resp, err := setup.admin.InstantiateCC(setup.ChannelID, instantiateCCReq)
 	if err != nil || resp.TransactionID == "" {
 		return errors.WithMessage(err, "failed to instantiate the chaincode\n")
 	}
-	fmt.Println("Chaincode instantiated")
+	fmt.Println("Chaincode Initialization succeed!")
 
 	// Channel client is used to query and execute transactions
-	clientContext := setup.sdk.ChannelContext(setup.ChannelID, fabsdk.WithUser(setup.UserName))
+	clientContext := setup.sdk.ChannelContext(setup.ChannelID, fabsdk.WithUser(setup.UserName), fabsdk.WithOrg(setup.OrgName))
 	setup.client, err = channel.New(clientContext)
 	if err != nil {
 		return errors.WithMessage(err, "failed to create new channel client\n")
 	}
-	fmt.Println("Channel client created")
+	fmt.Println("Channel client created!")
 
 	// Creation of the client which will enables access to our channel events
 	setup.event, err = event.New(clientContext)

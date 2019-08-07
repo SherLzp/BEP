@@ -57,6 +57,22 @@ services:
     networks:
       - BEP
 
+  ca.OrgAlibaba.BEP.com:
+    container_name: ca.OrgAlibaba.BEP.com
+    extends:
+      service: ca.OrgAlibaba.BEP.com
+      file: docker-compose-base.yaml
+    networks:
+      - BEP
+
+  ca.OrgBaidu.BEP.com:
+    container_name: ca.OrgBaidu.BEP.com
+    extends:
+      service: ca.OrgBaidu.BEP.com
+      file: docker-compose-base.yaml
+    networks:
+      - BEP
+
   cli:
     container_name: cli
     image: hyperledger/fabric-tools #:$IMAGE_TAG
@@ -92,5 +108,7 @@ services:
       - peer1.OrgAlibaba.BEP.com
       - peer0.OrgBaidu.BEP.com
       - peer1.OrgBaidu.BEP.com
+      - ca.OrgAlibaba.BEP.com
+      - ca.OrgBaidu.BEP.com
     networks:
       - BEP
