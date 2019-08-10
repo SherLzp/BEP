@@ -7,6 +7,7 @@ import { HomePageLayout } from './components/HomePageLayout'
 import { alertActions } from './_actions';
 import { LoginLayout } from './components/LoginLayout'
 import { SignupLayout } from './components/SignupLayout'
+import { HomePage } from './_pages/homePage/'
 
 class App extends Component {
     constructor(props) {
@@ -26,9 +27,10 @@ class App extends Component {
                             <div className={`alert ${alert.type}`}>{alert.message}</div>
                         }
                         <Router history={history}>
-                            <Route exact path="/" component={HomePageLayout} />
+                            {/* <Route exact path="/" component={HomePageLayout} />
                             <Route path="/login" component={LoginLayout} />
-                            <Route path="/signup" component={SignupLayout} />
+                            <Route path="/signup" component={SignupLayout} /> */}
+                            <Route path="/" component={HomePage}></Route>
                         </Router>
                     </div>
                 </div>
