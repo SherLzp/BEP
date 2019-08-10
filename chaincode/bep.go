@@ -42,3 +42,10 @@ func (t *BepChaincode) Invoke(stub shim.ChaincodeStubInterface) pd.Response {
 	return shim.Error("Received unknown function invocation")
 }
 
+func main() {
+	// Start the chaincode and make it ready for futures requests
+	err := shim.Start(new(BepChaincode))
+	if err != nil {
+		fmt.Printf("Error starting Heroes Service chaincode: %s", err)
+	}
+}
