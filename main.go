@@ -23,6 +23,7 @@ func main() {
 
 		OrgAdmin:        "Admin",
 		OrgName:         "OrgAlibaba",
+		OrgID:			 "OrgAlibaba",
 		ConfigFile:      "/home/lxs/Application/go/src/github.com/BEP/config.yaml",
 
 		// User parameters
