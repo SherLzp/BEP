@@ -12,7 +12,7 @@ services:
     image: hyperledger/fabric-orderer
     environment:
 #      - ORDERER_GENERAL_LOGLEVEL=INFO
-      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LOGLEVEL=DEBUG
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
       - ORDERER_GENERAL_GENESISMETHOD=file #生成创始区块的数据来源
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block #来自具体哪个文件
@@ -73,7 +73,6 @@ services:
         - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer1.OrgAlibaba.BEP.com/msp:/etc/hyperledger/fabric/msp
         - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer1.OrgAlibaba.BEP.com/tls:/etc/hyperledger/fabric/tls
         - peer1.OrgAlibaba.BEP.com:/var/hyperledger/production
-
     ports:
       - 7151:7151
 
@@ -122,6 +121,7 @@ services:
 
   ca.OrgAlibaba.BEP.com:
     image: hyperledger/fabric-ca
+    container_name: ca.OrgAlibaba.BEP.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.OrgAlibaba.BEP.com
@@ -135,11 +135,6 @@ services:
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
-    container_name: ca.OrgAlibaba.BEP.com
-    networks:
-      default:
-        aliases:
-          - ca.OrgAlibaba.BEP.com
 
 #  ca.OrgBaidu.BEP.com:
 #    image: hyperledger/fabric-ca
@@ -157,7 +152,3 @@ services:
 #    volumes:
 #      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
 #    container_name: ca.OrgBaidu.BEP.com
-#    networks:
-#      default:
-#        aliases:
-#          - ca.OrgBaidu.BEP.com

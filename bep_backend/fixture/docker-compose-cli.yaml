@@ -14,7 +14,7 @@ volumes:
 #  peer1.OrgBaidu.BEP.com:
 
 networks:
-  BEP:
+  default:
 
 services:
 
@@ -24,7 +24,7 @@ services:
       service: orderer.BEP.com
     container_name: orderer.BEP.com
     networks:
-      - BEP
+      - default
 
   peer0.OrgAlibaba.BEP.com:
     container_name: peer0.OrgAlibaba.BEP.com
@@ -32,7 +32,7 @@ services:
       file:  docker-compose-base.yaml
       service: peer0.OrgAlibaba.BEP.com
     networks:
-      - BEP
+      - default
 
   peer1.OrgAlibaba.BEP.com:
     container_name: peer1.OrgAlibaba.BEP.com
@@ -40,7 +40,7 @@ services:
       file:  docker-compose-base.yaml
       service: peer1.OrgAlibaba.BEP.com
     networks:
-      - BEP
+      - default
 
   ca.OrgAlibaba.BEP.com:
     container_name: ca.OrgAlibaba.BEP.com
@@ -48,7 +48,7 @@ services:
       service: ca.OrgAlibaba.BEP.com
       file: docker-compose-base.yaml
     networks:
-      - BEP
+      - default
 
 #  peer0.OrgBaidu.BEP.com:
 #    container_name: peer0.OrgBaidu.BEP.com
@@ -56,7 +56,7 @@ services:
 #      file:  docker-compose-base.yaml
 #      service: peer0.OrgBaidu.BEP.com
 #    networks:
-#      - BEP
+#      - default
 #
 #  peer1.OrgBaidu.BEP.com:
 #    container_name: peer1.OrgBaidu.BEP.com
@@ -64,7 +64,7 @@ services:
 #      file:  docker-compose-base.yaml
 #      service: peer1.OrgBaidu.BEP.com
 #    networks:
-#      - BEP
+#      - default
 
 #  ca.OrgBaidu.BEP.com:
 #    container_name: ca.OrgBaidu.BEP.com
@@ -72,7 +72,7 @@ services:
 #      service: ca.OrgBaidu.BEP.com
 #      file: docker-compose-base.yaml
 #    networks:
-#      - BEP
+#      - default
 
   cli:
     container_name: cli
@@ -112,4 +112,4 @@ services:
 #      - peer1.OrgBaidu.BEP.com
 #      - ca.OrgBaidu.BEP.com
     networks:
-      - BEP
+      - default
