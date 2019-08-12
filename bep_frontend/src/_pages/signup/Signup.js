@@ -16,13 +16,13 @@ import Container from '@material-ui/core/Container';
 function MadeWithLove() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Built with love by the '}
+      {'Built by the '}
       <Link color="inherit" href="https://material-ui.com/">
-        Material-UI
-      </Link>
+        BEP
+    </Link>
       {' team.'}
     </Typography>
-  );
+  )
 }
 
 const useStyles = makeStyles(theme => ({
@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SignUp() {
+export function SignUp() {
   const classes = useStyles();
 
   return (

@@ -1,52 +1,34 @@
-import React, { Component } from 'react';
-import { Router, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
-import 'semantic-ui-css/semantic.min.css'
-import { history } from './_helpers'
-import { HomePageLayout } from './components/HomePageLayout'
-import { alertActions } from './_actions';
-import { LoginLayout } from './components/LoginLayout'
-import { SignupLayout } from './components/SignupLayout'
-import { HomePage } from './_pages/homePage/'
+import React, { Component } from 'react'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { Layout } from './_pages/layout'
+import { HomeContent } from './_pages/homeContent'
+import { AllRequestsContent, YourRequestsContent, PushRequestContent, PushResponseContent } from './_pages/request'
+import { YourResponsesContent, ReceivedResponsesContent } from './_pages/response'
+import { RecordsContent } from './_pages/records'
+import { NotificationsContent } from './_pages/notifications'
+
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-        history.listen((location, action) => {
-            // clear alert on location change
-            this.props.clearAlerts();
-        });
-    }
-    render() {
-        const { alert } = this.props;
-        return (
-            <div className="jumbotron">
-                <div className="container">
-                    <div className="col-sm-8 col-sm-offset-2">
-                        {alert.message &&
-                            <div className={`alert ${alert.type}`}>{alert.message}</div>
-                        }
-                        <Router history={history}>
-                            {/* <Route exact path="/" component={HomePageLayout} />
-                            <Route path="/login" component={LoginLayout} />
-                            <Route path="/signup" component={SignupLayout} /> */}
-                            <Route path="/" component={HomePage}></Route>
-                        </Router>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  render() {
+    return (
+      <BrowserRouter>
+        <Layout>
+          <Switch>
+            <Route path="/home" component={HomeContent}></Route>
+            <Route path="/requests/allRequests" component={AllRequestsContent}></Route>
+            <Route path="/requests/yourRequests" component={YourRequestsContent}></Route>
+            <Route path="/requests/pushRequest" component={PushRequestContent}></Route>
+            <Route path="/requests/pushResponse" component={PushResponseContent}></Route>
+            <Route path="/responses/yourResponses" component={YourResponsesContent}></Route>
+            <Route path="/responses/receivedResponses" component={ReceivedResponsesContent}></Route>
+            <Route path="/records" component={RecordsContent}></Route>
+            <Route path="/notifications" component={NotificationsContent}></Route>
+            <Route path="/profile" component={HomeContent}></Route>
+          </Switch >
+        </Layout>
+      </BrowserRouter >
+    )
+  }
 }
 
-function mapState(state) {
-    const { alert } = state;
-    return { alert };
-}
-
-const actionCreators = {
-    clearAlerts: alertActions.clear
-};
-
-const connectedApp = connect(mapState, actionCreators)(App);
-export { connectedApp as App };
+export default App
