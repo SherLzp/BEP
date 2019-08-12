@@ -103,8 +103,13 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 	fmt.Println("ccPkg Creation succeed!")
 
-	// Install example cc to org peers
-	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
+	// Install bep cc to org peers
+	installCCReq := resmgmt.InstallCCRequest{
+		Name: setup.ChainCodeID,
+		Path: setup.ChaincodePath,
+		Version: "0",
+		Package: ccPkg,
+	}
 	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
 	if err != nil {
 		return errors.WithMessage(err, "failed to install chaincode\n")
@@ -115,6 +120,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{setup.OrgID})
 
+	// instantiate bep cc to peers
 	instantiateCCReq := resmgmt.InstantiateCCRequest{
 		Name: setup.ChainCodeID,
 		Path: setup.ChaincodePath,
@@ -143,7 +149,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new event client\n")
 	}
 	fmt.Println("Event client created")
-
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
 }
