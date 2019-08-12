@@ -6,6 +6,7 @@ import Container from '@material-ui/core/Container'
 import { Button } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Typography from '@material-ui/core/Typography'
 import Switch from '@material-ui/core/Switch'
 
 const useStyles = makeStyles(theme => ({
@@ -48,6 +49,9 @@ export function PushResponseContent(props) {
 
     return (
         <Container maxWidth="lg" className={classes.container}>
+            <Grid>
+                <Typography variant="h4">Push Response</Typography>
+            </Grid>
             <Grid>
                 <TextField
                     id="standard-full-width"

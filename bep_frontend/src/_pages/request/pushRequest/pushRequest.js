@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid'
 import Container from '@material-ui/core/Container'
-import { Button } from '@material-ui/core'
+import { Button, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -42,6 +42,9 @@ export function PushRequestContent() {
 
     return (
         <Container maxWidth="lg" className={classes.container}>
+            <Grid>
+                <Typography variant="h4">Push Request</Typography>
+            </Grid>
             <Grid>
                 <TextField
                     id="standard-full-width"
