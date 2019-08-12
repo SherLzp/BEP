@@ -1,8 +1,3 @@
-# Copyright IBM Corp. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
-
 version: '2'
 
 volumes:
@@ -10,11 +5,9 @@ volumes:
   peer0.OrgAlibaba.BEP.com:
   peer1.OrgAlibaba.BEP.com:
   ca.OrgAlibaba.BEP.com:
-#  peer0.OrgBaidu.BEP.com:
-#  peer1.OrgBaidu.BEP.com:
 
 networks:
-  BEP:
+  default:
 
 services:
 
@@ -24,7 +17,7 @@ services:
       service: orderer.BEP.com
     container_name: orderer.BEP.com
     networks:
-      - BEP
+      - default
 
   peer0.OrgAlibaba.BEP.com:
     container_name: peer0.OrgAlibaba.BEP.com
@@ -32,7 +25,7 @@ services:
       file:  docker-compose-base.yaml
       service: peer0.OrgAlibaba.BEP.com
     networks:
-      - BEP
+      - default
 
   peer1.OrgAlibaba.BEP.com:
     container_name: peer1.OrgAlibaba.BEP.com
@@ -40,7 +33,7 @@ services:
       file:  docker-compose-base.yaml
       service: peer1.OrgAlibaba.BEP.com
     networks:
-      - BEP
+      - default
 
   ca.OrgAlibaba.BEP.com:
     container_name: ca.OrgAlibaba.BEP.com
@@ -48,31 +41,7 @@ services:
       service: ca.OrgAlibaba.BEP.com
       file: docker-compose-base.yaml
     networks:
-      - BEP
-
-#  peer0.OrgBaidu.BEP.com:
-#    container_name: peer0.OrgBaidu.BEP.com
-#    extends:
-#      file:  docker-compose-base.yaml
-#      service: peer0.OrgBaidu.BEP.com
-#    networks:
-#      - BEP
-#
-#  peer1.OrgBaidu.BEP.com:
-#    container_name: peer1.OrgBaidu.BEP.com
-#    extends:
-#      file:  docker-compose-base.yaml
-#      service: peer1.OrgBaidu.BEP.com
-#    networks:
-#      - BEP
-
-#  ca.OrgBaidu.BEP.com:
-#    container_name: ca.OrgBaidu.BEP.com
-#    extends:
-#      service: ca.OrgBaidu.BEP.com
-#      file: docker-compose-base.yaml
-#    networks:
-#      - BEP
+      - default
 
   cli:
     container_name: cli
@@ -83,7 +52,7 @@ services:
       - GOPATH=/home/lxs/Application/go
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       #- FABRIC_LOGGING_SPEC=DEBUG
-      - FABRIC_LOGGING_SPEC=INFO #日志级别,critical,error,warning,notice,info,debug从高到低
+      - FABRIC_LOGGING_SPEC=DEBUG #日志级别,critical,error,warning,notice,info,debug从高到低
       - CORE_PEER_ID=cli #当前节点的ID即名字
       - CORE_PEER_ADDRESS=peer0.OrgAlibaba.BEP.com:7051 #连接peer节点的地址
       - CORE_PEER_LOCALMSPID=OrgAlibaba #连接peer节点所属的组织
@@ -94,7 +63,6 @@ services:
       # 普通账号: 交易(写数据),查询(读数据)
       # 管理员账号: 交易(写数据),查询(读数据),创建通道,让某个节点加入到通道,安装链码,链码初始化
       - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/OrgAlibaba.BEP.com/users/Admin@OrgAlibaba.BEP.com/msp
-#    working_dir: /home/lxs/Application/go/src/github.com/hyperledger/fabric/peer
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
@@ -108,8 +76,5 @@ services:
       - peer0.OrgAlibaba.BEP.com
       - peer1.OrgAlibaba.BEP.com
       - ca.OrgAlibaba.BEP.com
-#      - peer0.OrgBaidu.BEP.com
-#      - peer1.OrgBaidu.BEP.com
-#      - ca.OrgBaidu.BEP.com
     networks:
-      - BEP
+      - default
