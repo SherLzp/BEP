@@ -119,6 +119,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{setup.OrgID})
+	//ccPolicy, _ := cauthdsl.FromString("AND ('OrgAlibaba.member','OrgBaidu.member')")
 
 	// instantiate bep cc to peers
 	instantiateCCReq := resmgmt.InstantiateCCRequest{

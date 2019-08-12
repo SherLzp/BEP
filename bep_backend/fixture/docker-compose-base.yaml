@@ -40,6 +40,7 @@ services:
       - CORE_PEER_CHAINCODEADDRESS=peer0.OrgAlibaba.BEP.com:7061
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7061
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.OrgAlibaba.BEP.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.OrgAlibaba.BEP.com:7051
       - CORE_PEER_LOCALMSPID=OrgAlibaba
     volumes:
         - /var/run/:/host/var/run/

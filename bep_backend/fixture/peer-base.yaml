@@ -15,6 +15,7 @@ services:
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
       # 要指定docker加入的网络名.举例:如果是Demo,得到的是demo_byfn
+      - CORE_PEER_NETWORKID=default
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fixture_default # cc与peer节点使用同一个网,this is the network of peer
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_TLS_ENABLED=true

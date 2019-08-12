@@ -79,7 +79,7 @@ organizations:
 
 orderers:
   orderer.BEP.com:
-    url: localhost:7050
+    url: grpcs://localhost:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
@@ -105,8 +105,8 @@ orderers:
 peers:
   peer0.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-    url: localhost:7051
-    eventUrl: localhost:7053
+    url: grpcs://localhost:7051
+    eventUrl: grpcs://localhost:7053
     grpcOptions:
       ssl-target-name-override: peer0.OrgAlibaba.BEP.com
       # These parameters should be set in coordination with the keepalive policy on the server,
@@ -125,8 +125,8 @@ peers:
 
   peer1.OrgAlibaba.BEP.com:
     # this URL is used to send endorsement and query requests
-    url: localhost:7151
-    eventUrl: localhost:7153
+    url: grpcs://localhost:7151
+    eventUrl: grpcs://localhost:7153
     grpcOptions:
       ssl-target-name-override: peer1.OrgAlibaba.BEP.com
       # These parameters should be set in coordination with the keepalive policy on the server,
@@ -145,7 +145,7 @@ peers:
 
 certificateAuthorities:
   ca.OrgAlibaba.BEP.com:
-    url: http://localhost:7054
+    url: grpcs://localhost:7054
     tlsCACerts:
       # Comma-Separated list of paths
       path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
@@ -167,24 +167,24 @@ certificateAuthorities:
 entityMatchers:
   peer:
     - pattern: (\w*)peer0.OrgAlibaba.BEP.com(\w*)
-      urlSubstitutionExp: localhost:7051
-      eventUrlSubstitutionExp: localhost:7053
+      urlSubstitutionExp: grpcs://localhost:7051
+      eventUrlSubstitutionExp: grpcs://localhost:7053
       sslTargetOverrideUrlSubstitutionExp: peer0.OrgAlibaba.BEP.com
       mappedHost: peer0.OrgAlibaba.BEP.com
 
     - pattern: (\w*)peer1.OrgAlibaba.BEP.com(\w*)
-      urlSubstitutionExp: localhost:7151
-      eventUrlSubstitutionExp: localhost:7153
+      urlSubstitutionExp: grpcs://localhost:7151
+      eventUrlSubstitutionExp: grpcs://localhost:7153
       sslTargetOverrideUrlSubstitutionExp: peer1.OrgAlibaba.BEP.com
       mappedHost: peer1.OrgAlibaba.BEP.com
 
   orderer:
     - pattern: (\w*)orderer.BEP.com(\w*)
-      urlSubstitutionExp: localhost:7050
+      urlSubstitutionExp: grpcs://localhost:7050
       sslTargetOverrideUrlSubstitutionExp: orderer.BEP.com
       mappedHost: orderer.BEP.com
 
   certificateAuthority:
     - pattern: (\w*)ca.OrgAlibaba.BEP.com(\w*)
-      urlSubstitutionExp: http://localhost:7054
+      urlSubstitutionExp: grpcs://localhost:7054
       mappedHost: ca.OrgAlibaba.BEP.com
