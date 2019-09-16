@@ -94,6 +94,7 @@ func (setup *FabricSetup) Initialize() error {
 	return nil
 }
 
+// Install and Instantiate the chaincode into the peers blonged to org
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 	// Create the chaincode package that will be sent to the peers
