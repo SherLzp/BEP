@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/BEP/bep_backend/fabric-sdk-go"
+	"github.com/BEP/sdkInit"
 	"os"
 )
 
 func main() {
 	// Definition of the Fabric SDK properties
-	fSetup := fabric_sdk.FabricSetup{
+	fSetup := sdkInit.FabricSetup{
 		// Network parameters
 		OrdererID: "orderer.BEP.com",
 
@@ -23,7 +23,7 @@ func main() {
 
 		OrgAdmin:        "Admin",
 		OrgName:         "OrgAlibaba",
-		OrgID:			 "OrgAlibaba",
+		OrgID:			 "OrgAlibaba.BEP.com",
 		ConfigFile:      "/home/lxs/Application/go/src/github.com/BEP/config.yaml",
 
 		// User parameters

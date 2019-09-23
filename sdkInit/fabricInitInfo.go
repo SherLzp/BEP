@@ -1,4 +1,4 @@
-package fabric_sdk
+package sdkInit
 
 import (
 	"fmt"
@@ -85,7 +85,7 @@ func (setup *FabricSetup) Initialize() error {
 
 	// Make admin user join the previously created channel
 	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID)); err != nil {
-		return errors.WithMessage(err, "failed to make admin join channel\n")
+		return errors.WithMessage(err, "failed add peer to the channel\n")
 	}
 	fmt.Println("Channel joined")
 
