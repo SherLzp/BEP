@@ -40,17 +40,17 @@ channels:
         ledgerQuery: true
         eventSource: true
       peer1.OrgAlibaba.BEP.com:
-        endorsingPeer: false
+        endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
       peer0.OrgBaidu.BEP.com:
-        endorsingPeer: false
+        endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
       peer1.OrgBaidu.BEP.com:
-        endorsingPeer: false
+        endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
