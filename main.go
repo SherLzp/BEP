@@ -3,13 +3,13 @@ package main
 import (
 	"BEP/bep_backend/fabric-sdk-go"
 	"fmt"
-	"github.com/BEP/bep_backend/fabric-sdk-go"
+	"github.com/BEP/sdkInit"
 	"os"
 )
 
 func main() {
 	// Definition of the Fabric SDK properties
-	fSetup := fabric_sdk.FabricSetup{
+	fSetup := sdkInit.FabricSetup{
 		// Network parameters
 		OrdererID: "orderer.BEP.com",
 
@@ -18,13 +18,13 @@ func main() {
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
 
 		// Chaincode parameters
-		ChainCodeID:     "bep",
+		ChainCodeID:     "BEP",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/BEP/chaincode/",
 
 		OrgAdmin:        "Admin",
 		OrgName:         "OrgAlibaba",
-		OrgID:			 "OrgAlibaba",
+		OrgID:			 "OrgAlibaba.BEP.com",
 		ConfigFile:      "/home/lxs/Application/go/src/github.com/BEP/config.yaml",
 
 		// User parameters
