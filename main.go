@@ -1,9 +1,8 @@
 package main
 
 import (
-	"BEP/bep_backend/fabric-sdk-go"
 	"fmt"
-	"github.com/BEP/sdkInit"
+	"./sdkInit"
 	"os"
 )
 
@@ -15,7 +14,8 @@ func main() {
 
 		// Channel parameters
 		ChannelID:     "bepchannel",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
+		// os.Getenv("GOPATH") +
+		ChannelConfig: "/home/sher/go/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
 
 		// Chaincode parameters
 		ChainCodeID:     "BEP",
@@ -25,7 +25,7 @@ func main() {
 		OrgAdmin:        "Admin",
 		OrgName:         "OrgAlibaba",
 		OrgID:			 "OrgAlibaba.BEP.com",
-		ConfigFile:      "/home/lxs/Application/go/src/github.com/BEP/config.yaml",
+		ConfigFile:      "/home/sher/go/src/github.com/BEP/config.yaml",
 
 		// User parameters
 		UserName: "User1",
