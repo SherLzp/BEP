@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BEP/bep_backend/fabric-sdk-go"
 	"fmt"
 	"github.com/BEP/bep_backend/fabric-sdk-go"
 	"os"

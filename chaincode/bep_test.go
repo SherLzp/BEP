@@ -106,7 +106,6 @@ func TestQueryAllRequest(t *testing.T) {
 		}
 		cnt += 1
 	}
-
 }
 
 func TestQueryRequestByUserId(t *testing.T) {

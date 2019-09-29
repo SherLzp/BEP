@@ -14,12 +14,10 @@ import Badge from '@material-ui/core/Badge'
 import PeopleIcon from '@material-ui/icons/People'
 import MenuIcon from '@material-ui/icons/Menu'
 import HomeIcon from '@material-ui/icons/Home'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
 import { ListItemIcon } from '@material-ui/core'
-import { Link, Route, withRouter } from 'react-router-dom'
-import { HomeContent } from '../homeContent';
+import { Link, withRouter } from 'react-router-dom'
 
 function MadeWithLove() {
     return (

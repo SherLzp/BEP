@@ -14,15 +14,21 @@ class App extends Component {
       <BrowserRouter>
         <Layout>
           <Switch>
+            {/* Home */}
             <Route path="/home" component={HomeContent}></Route>
+            {/* Request Part */}
             <Route path="/requests/allRequests" component={AllRequestsContent}></Route>
             <Route path="/requests/yourRequests" component={YourRequestsContent}></Route>
             <Route path="/requests/pushRequest" component={PushRequestContent}></Route>
             <Route path="/requests/pushResponse" component={PushResponseContent}></Route>
+            {/* Response Part */}
             <Route path="/responses/yourResponses" component={YourResponsesContent}></Route>
             <Route path="/responses/receivedResponses" component={ReceivedResponsesContent}></Route>
+            {/* User Records Part*/}
             <Route path="/records" component={RecordsContent}></Route>
+            {/* Notifications Part */}
             <Route path="/notifications" component={NotificationsContent}></Route>
+            {/* User Info Part */}
             <Route path="/profile" component={HomeContent}></Route>
           </Switch >
         </Layout>
