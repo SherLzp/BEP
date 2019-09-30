@@ -17,107 +17,40 @@ Organizations:
         Name: OrdererOrg
 
         # ID to load the MSP definition as
-        ID: OrdererOrg
+        ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: crypto-config/ordererOrganizations/BEP.com/msp
-
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('OrdererOrg.member')"
-            Writers:
-                Type: Signature
-                Rule: "OR('OrdererOrg.member')"
-            Admins:
-                Type: Signature
-                Rule: "OR('OrdererOrg.admin')"
+        MSPDir: ./crypto-config/ordererOrganizations/bep.com/msp
 
     - &OrgAlibaba
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: OrgAlibaba
+        Name: OrgAlibabaMSP
 
         # ID to load the MSP definition as
-        ID: OrgAlibaba
+        ID: OrgAlibabaMSP
 
-        MSPDir: crypto-config/peerOrganizations/OrgAlibaba.BEP.com/msp
-
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('OrgAlibaba.admin', 'OrgAlibaba.peer', 'OrgAlibaba.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('OrgAlibaba.admin', 'OrgAlibaba.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('OrgAlibaba.admin')"
+        MSPDir: ./crypto-config/peerOrganizations/orgalibaba.bep.com/msp
 
         # leave this flag set to true.
         AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.OrgAlibaba.BEP.com
+            - Host: peer0.orgalibaba.bep.com
               Port: 7051
 
     - &OrgBaidu
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: OrgBaidu
+        Name: OrgBaiduMSP
 
         # ID to load the MSP definition as
-        ID: OrgBaidu
+        ID: OrgBaiduMSP
 
-        MSPDir: crypto-config/peerOrganizations/OrgBaidu.BEP.com/msp
-
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('OrgBaidu.admin', 'OrgBaidu.peer', 'OrgBaidu.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('OrgBaidu.admin', 'OrgBaidu.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('OrgBaidu.admin')"
+        MSPDir: ./crypto-config/peerOrganizations/orgbaidu.bep.com/msp
 
         AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.OrgBaidu.BEP.com
-              Port: 7052
+            - Host: peer0.orgbaidu.bep.com
+              Port: 7051
 
-################################################################################
-#
-#   SECTION: Capabilities
-#
-#   - This section defines the capabilities of fabric network. This is a new
-#   concept as of v1.1.0 and should not be utilized in mixed networks with
-#   v1.0.x peers and orderers.  Capabilities define features which must be
-#   present in a fabric binary for that binary to safely participate in the
-#   fabric network.  For instance, if a new MSP type is added, newer binaries
-#   might recognize and validate the signatures from this type, while older
-#   binaries without this support would be unable to validate those
-#   transactions.  This could lead to different versions of the fabric binaries
-#   having different world states.  Instead, defining a capability for a channel
-#   informs those binaries without this capability that they must cease
-#   processing transactions until they have been upgraded.  For v1.0.x if any
-#   capabilities are defined (including a map with all capabilities turned off)
-#   then the v1.0.x peer will deliberately crash.
-#
-################################################################################
 Capabilities:
     # Channel capabilities apply to both the orderers and the peers and must be
     # supported by both.
@@ -172,30 +105,6 @@ Application: &ApplicationDefaults
     # the application side of the network
     Organizations:
 
-    # Policies defines the set of policies at this level of the config tree
-    # For Application policies, their canonical path is
-    #   /Channel/Application/<PolicyName>
-    Policies:
-        Readers:
-            Type: ImplicitMeta
-            Rule: "ANY Readers"
-        Writers:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
-
-    Capabilities:
-        <<: *ApplicationCapabilities
-################################################################################
-#
-#   SECTION: Orderer
-#
-#   - This section defines the values to encode into a config transaction or
-#   genesis block for orderer related parameters
-#
-################################################################################
 Orderer: &OrdererDefaults
 
     # Orderer Type: The orderer implementation to start
@@ -203,7 +112,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - orderer.BEP.com:7050
+        - orderer.bep.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
@@ -295,7 +204,7 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    Genesis:
+    BEPOrdererGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
@@ -308,8 +217,8 @@ Profiles:
                 Organizations:
                     - *OrgAlibaba
                     - *OrgBaidu
-    Channel:
-        Consortium: BEP
+    TwoOrgsChannel:
+        Consortium: BEPConsortium
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
@@ -318,78 +227,3 @@ Profiles:
                 - *OrgBaidu
             Capabilities:
                 <<: *ApplicationCapabilities
-
-    DevModeKafka:
-        <<: *ChannelDefaults
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            OrdererType: kafka
-            Kafka:
-                Brokers:
-                - kafka.BEP.com:9092
-
-            Organizations:
-            - *OrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-            - <<: *OrdererOrg
-        Consortiums:
-            BEP:
-                Organizations:
-                - *OrgAlibaba
-                - *OrgBaidu
-
-    MultiNodeEtcdRaft:
-        <<: *ChannelDefaults
-        Capabilities:
-            <<: *ChannelCapabilities
-        Orderer:
-            <<: *OrdererDefaults
-            OrdererType: etcdraft
-            EtcdRaft:
-                Consenters:
-                - Host: orderer.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                - Host: orderer2.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                - Host: orderer3.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-                - Host: orderer4.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
-                - Host: orderer5.example.com
-                  Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
-            Addresses:
-                - orderer.example.com:7050
-                - orderer2.example.com:7050
-                - orderer3.example.com:7050
-                - orderer4.example.com:7050
-                - orderer5.example.com:7050
-
-            Organizations:
-            - *OrdererOrg
-            Capabilities:
-                <<: *OrdererCapabilities
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-            - <<: *OrdererOrg
-        Consortiums:
-            BEP:
-                Organizations:
-                - *OrgAlibaba
-                - *OrgBaidu
