@@ -1,0 +1,265 @@
+version: 1.0.0
+
+client:
+  organization: OrgAlibaba
+
+  logging:
+    level: info
+  cryptoconfig:
+    path: ${GOPATH}/src/github.com/BEP/crypto-config
+  credentialStore:
+    path: "/tmp/state-store"
+    cryptoStore:
+      path: /tmp/msp
+  BCCSP:
+    security:
+      enabled: true
+      default:
+        provider: "SW"
+      hashAlgorithm: "SHA2"
+      softVerify: true
+      level: 256
+
+  tlsCerts:
+    # [Optional]. Use system certificate pool when connecting to peers, orderers (for negotiating TLS) Default: false
+    systemCertPool: false
+
+    # [Optional]. Client key and cert for TLS handshake with peers and orderers
+    client:
+      key:
+        path:
+      cert:
+        path:
+
+channels:
+  bepchannel:
+    peers:
+      peer0.OrgAlibaba.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.OrgAlibaba.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.OrgBaidu.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.OrgBaidu.BEP.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+    policies:
+      #[Optional] options for retrieving channel configuration blocks
+      queryChannelConfig:
+        #[Optional] min number of success responses (from targets/peers)
+        minResponses: 1
+        #[Optional] channel config will be retrieved for these number of random targets
+        maxTargets: 1
+        #[Optional] retry options for query config block
+        retryOpts:
+          #[Optional] number of retry attempts
+          attempts: 5
+          #[Optional] the back off interval for the first retry attempt
+          initialBackoff: 500ms
+          #[Optional] the maximum back off interval for any retry attempt
+          maxBackoff: 5s
+          #[Optional] he factor by which the initial back off period is exponentially incremented
+          backoffFactor: 2.0
+
+organizations:
+  OrgAlibaba:
+    mspid: OrgAlibaba
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/OrgAlibaba.BEP.com/users/{username}@OrgAlibaba.BEP.com/msp
+
+    peers:
+      - peer0.OrgAlibaba.BEP.com
+      - peer1.OrgAlibaba.BEP.com
+
+#    certificateAuthorities:
+#      - ca.OrgAlibaba.BEP.com
+
+  OrgBaidu:
+    mspid: OrgBaidu
+
+    # This org's MSP store (absolute path or relative to client.cryptoconfig)
+    cryptoPath:  peerOrganizations/OrgBaidu.BEP.com/users/{username}@OrgBaidu.BEP.com/msp
+
+    peers:
+      - peer0.OrgBaidu.BEP.com
+      - peer1.OrgBaidu.BEP.com
+
+#    certificateAuthorities:
+#      - ca.OrgBaidu.BEP.com
+
+orderers:
+  orderer.BEP.com:
+    url: grpcs://localhost:7050
+
+    # these are standard properties defined by the gRPC library
+    # they will be passed in as-is to gRPC client constructor
+    grpcOptions:
+      ssl-target-name-override: orderer.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/ordererOrganizations/BEP.com/tlsca/tlsca.BEP.com-cert.pem
+#
+# List of peers to send various requests to, including endorsement, query
+# and event listener registration.
+#
+peers:
+  peer0.OrgAlibaba.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7051
+    eventUrl: grpcs://localhost:7053
+    grpcOptions:
+      ssl-target-name-override: peer0.OrgAlibaba.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+
+  peer1.OrgAlibaba.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7151
+    eventUrl: grpcs://localhost:7153
+    grpcOptions:
+      ssl-target-name-override: peer1.OrgAlibaba.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+
+  peer0.OrgBaidu.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7052
+    eventUrl: grpcs://localhost:7057
+    grpcOptions:
+      ssl-target-name-override: peer0.OrgBaidu.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
+
+  peer1.OrgBaidu.BEP.com:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7152
+    eventUrl: grpcs://localhost:7157
+    grpcOptions:
+      ssl-target-name-override: peer1.OrgBaidu.BEP.com
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgBaidu.BEP.com/tlsca/tlsca.OrgBaidu.BEP.com-cert.pem
+
+#certificateAuthorities:
+#  ca.OrgAlibaba.BEP.com:
+#    url: grpcs://localhost:7054
+#    tlsCACerts:
+#      # Comma-Separated list of paths
+#      path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/tlsca/tlsca.OrgAlibaba.BEP.com-cert.pem
+#      # Client key and cert for SSL handshake with Fabric CA
+#      client:
+#        key:
+#          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/users/User1@OrgAlibaba.BEP.com/tls/client.key
+#        cert:
+#          path: ${GOPATH}/src/github.com/BEP/crypto-config/peerOrganizations/OrgAlibaba.BEP.com/users/User1@OrgAlibaba.BEP.com/tls/client.crt
+#
+#    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+#    # needed to enroll and invoke new users.
+#    registrar:
+#      enrollId: admin
+#      enrollSecret: adminpw
+#    # [Optional] The optional name of the CA.
+#    caName: ca.OrgAlibaba.BEP.com
+
+entityMatchers:
+  peer:
+    - pattern: (\w*)peer0.OrgAlibaba.BEP.com(\w*)
+      urlSubstitutionExp: grpcs://localhost:7051
+      eventUrlSubstitutionExp: grpcs://localhost:7053
+      sslTargetOverrideUrlSubstitutionExp: peer0.OrgAlibaba.BEP.com
+      mappedHost: peer0.OrgAlibaba.BEP.com
+
+    - pattern: (\w*)peer1.OrgAlibaba.BEP.com(\w*)
+      urlSubstitutionExp: grpcs://localhost:7151
+      eventUrlSubstitutionExp: grpcs://localhost:7153
+      sslTargetOverrideUrlSubstitutionExp: peer1.OrgAlibaba.BEP.com
+      mappedHost: peer1.OrgAlibaba.BEP.com
+
+    - pattern: (\w*)peer0.OrgBaidu.BEP.com(\w*)
+      urlSubstitutionExp: grpcs://localhost:7052
+      eventUrlSubstitutionExp: grpcs://localhost:7057
+      sslTargetOverrideUrlSubstitutionExp: peer0.OrgBaidu.BEP.com
+      mappedHost: peer0.OrgBaidu.BEP.com
+
+    - pattern: (\w*)peer1.OrgBaidu.BEP.com(\w*)
+      urlSubstitutionExp: grpcs://localhost:7152
+      eventUrlSubstitutionExp: grpcs://localhost:7157
+      sslTargetOverrideUrlSubstitutionExp: peer1.OrgBaidu.BEP.com
+      mappedHost: peer1.OrgBaidu.BEP.com
+
+  orderer:
+    - pattern: (\w*)orderer.BEP.com(\w*)
+      urlSubstitutionExp: grpcs://localhost:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.BEP.com
+      mappedHost: orderer.BEP.com
+
+#  certificateAuthority:
+#    - pattern: (\w*)ca.OrgAlibaba.BEP.com(\w*)
+#      urlSubstitutionExp: grpcs://localhost:7054
+#      mappedHost: ca.OrgAlibaba.BEP.com

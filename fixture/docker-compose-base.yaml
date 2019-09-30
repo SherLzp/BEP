@@ -1,0 +1,151 @@
+version: '2'
+
+services:
+
+  orderer.BEP.com:
+    container_name: orderer.BEP.com
+    image: hyperledger/fabric-orderer
+    environment:
+#      - ORDERER_GENERAL_LOGLEVEL=INFO
+      - ORDERER_GENERAL_LOGLEVEL=DEBUG
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 #监听本机地址,如果是0会自动读取网卡,识别实际的IP
+      - ORDERER_GENERAL_GENESISMETHOD=file #生成创始区块的数据来源
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block #来自具体哪个文件
+      - ORDERER_GENERAL_LOCALMSPID=OrdererOrg #当前节点属于哪个组织ID
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ../../crypto-config/ordererOrganizations/BEP.com/orderers/orderer.BEP.com/msp:/var/hyperledger/orderer/msp
+      - ../../crypto-config/ordererOrganizations/BEP.com/orderers/orderer.BEP.com/tls/:/var/hyperledger/orderer/tls
+      - orderer.BEP.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.OrgAlibaba.BEP.com:
+    container_name: peer0.OrgAlibaba.BEP.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.OrgAlibaba.BEP.com
+      - CORE_PEER_ADDRESS=peer0.OrgAlibaba.BEP.com:7051 # only needed for the client code
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.OrgAlibaba.BEP.com:7061
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7061
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.OrgAlibaba.BEP.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.OrgAlibaba.BEP.com:7051
+      - CORE_PEER_LOCALMSPID=OrgAlibaba
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer0.OrgAlibaba.BEP.com/msp:/etc/hyperledger/fabric/msp
+        - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer0.OrgAlibaba.BEP.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.OrgAlibaba.BEP.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+
+  peer1.OrgAlibaba.BEP.com:
+    container_name: peer1.OrgAlibaba.BEP.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.OrgAlibaba.BEP.com
+      - CORE_PEER_ADDRESS=peer1.OrgAlibaba.BEP.com:7151
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7151
+      - CORE_PEER_CHAINCODEADDRESS=peer1.OrgAlibaba.BEP.com:7161
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7161
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.OrgAlibaba.BEP.com:7151
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.OrgAlibaba.BEP.com:7051
+      - CORE_PEER_LOCALMSPID=OrgAlibaba
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer1.OrgAlibaba.BEP.com/msp:/etc/hyperledger/fabric/msp
+        - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/peers/peer1.OrgAlibaba.BEP.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.OrgAlibaba.BEP.com:/var/hyperledger/production
+    ports:
+      - 7151:7151
+
+  peer0.OrgBaidu.BEP.com:
+    container_name: peer0.OrgBaidu.BEP.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.OrgBaidu.BEP.com
+      - CORE_PEER_ADDRESS=peer0.OrgBaidu.BEP.com:7052
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.OrgBaidu.BEP.com:7062
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7062
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.OrgBaidu.BEP.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.OrgBaidu.BEP.com:7052
+      - CORE_PEER_LOCALMSPID=OrgBaidu
+    volumes:
+      - /var/run/:/host/var/run/
+      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/peers/peer0.OrgBaidu.BEP.com/msp:/etc/hyperledger/fabric/msp
+      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/peers/peer0.OrgBaidu.BEP.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.OrgBaidu.BEP.com:/var/hyperledger/production
+    ports:
+      - 7052:7052
+
+  peer1.OrgBaidu.BEP.com:
+    container_name: peer1.OrgBaidu.BEP.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.OrgBaidu.BEP.com
+      - CORE_PEER_ADDRESS=peer1.OrgBaidu.BEP.com:7152
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7152
+      - CORE_PEER_CHAINCODEADDRESS=peer1.OrgBaidu.BEP.com:7162
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7162
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.OrgBaidu.BEP.com:7152
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.OrgBaidu.BEP.com:7152
+      - CORE_PEER_LOCALMSPID=OrgBaidu
+    volumes:
+      - /var/run/:/host/var/run/
+      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/peers/peer1.OrgBaidu.BEP.com/msp:/etc/hyperledger/fabric/msp
+      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/peers/peer1.OrgBaidu.BEP.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.OrgBaidu.BEP.com:/var/hyperledger/production
+    ports:
+      - 7152:7152
+
+#  ca.OrgAlibaba.BEP.com:
+#    image: hyperledger/fabric-ca
+#    container_name: ca.OrgAlibaba.BEP.com
+#    environment:
+#      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+#      - FABRIC_CA_SERVER_CA_NAME=ca.OrgAlibaba.BEP.com
+#      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgAlibaba.BEP.com-cert.pem
+#      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+#      - FABRIC_CA_SERVER_TLS_ENABLED=true
+#      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgAlibaba.BEP.com-cert.pem
+#      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+#    ports:
+#      - "7054:7054"
+#    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+#    volumes:
+#      - ../../crypto-config/peerOrganizations/OrgAlibaba.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
+#
+#  ca.OrgBaidu.BEP.com:
+#    image: hyperledger/fabric-ca
+#    container_name: ca.OrgBaidu.BEP.com
+#    environment:
+#      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+#      - FABRIC_CA_SERVER_CA_NAME=ca.OrgBaidu.BEP.com
+#      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgBaidu.BEP.com-cert.pem
+#      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+#      - FABRIC_CA_SERVER_TLS_ENABLED=true
+#      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.OrgBaidu.BEP.com-cert.pem
+#      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/b4a9a9585aebe52646e1987d4eca4a0ecf3f0ab688ca7924c07249c0303553ba_sk
+#    ports:
+#      - "7055:7055"
+#    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+#    volumes:
+#      - ../../crypto-config/peerOrganizations/OrgBaidu.BEP.com/ca/:/etc/hyperledger/fabric-ca-server-config
