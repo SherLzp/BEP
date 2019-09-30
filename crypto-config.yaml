@@ -7,7 +7,7 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
-    Domain: BEP.com
+    Domain: bep.com
 
     # ---------------------------------------------------------------------------
     # "Specs" - See PeerOrgs below for complete description
@@ -23,7 +23,7 @@ PeerOrgs:
   # Org1
   # ---------------------------------------------------------------------------
   - Name: OrgAlibaba
-    Domain: OrgAlibaba.BEP.com
+    Domain: orgalibaba.bep.com
     EnableNodeOUs: true
 
     # ---------------------------------------------------------------------------
@@ -107,9 +107,9 @@ PeerOrgs:
   # Org2: See "Org1" for full specification
   # ---------------------------------------------------------------------------
   - Name: OrgBaidu
-    Domain: OrgBaidu.BEP.com
-    EnableNodeOUs: false
+    Domain: orgbaidu.bep.com
+    EnableNodeOUs: true
     Template:
       Count: 2
     Users:
-      Count: 3
+      Count: 4
