@@ -35,7 +35,7 @@ client:
         path:
 
 channels:
-  BEPChannel:
+  bepchannel:
     peers:
       peer0.org1.bep.com:
         endorsingPeer: true
@@ -77,7 +77,7 @@ channels:
 
 organizations:
   Org1:
-    mspid: org1.bep.com
+    mspid: Org1MSP
     cryptoPath: peerOrganizations/org1.bep.com/users/{userName}@org1.bep.com/msp
     peers:
       - peer0.org1.bep.com
