@@ -2,49 +2,40 @@ package main
 
 import (
 	"fmt"
-	"./sdkInit"
-	"os"
+	"github.com/BEP/sdkInit"
+)
+
+const (
+	configFile = "config.yaml"
+	initialized = false
+	SimpleCC = "simplecc"
 )
 
 func main() {
-	// Definition of the Fabric SDK properties
-	fSetup := sdkInit.FabricSetup{
-		// Network parameters
-		OrdererID: "orderer.BEP.com",
 
-		// Channel parameters
-		ChannelID:     "bepchannel",
-		// os.Getenv("GOPATH") +
-		ChannelConfig: "/home/sher/go/src/github.com/BEP/bep_backend/fixture/channel-artifacts/channel.tx",
+	initInfo := &sdkInit.InitInfo{
 
-		// Chaincode parameters
-		ChainCodeID:     "BEP",
-		ChaincodeGoPath: os.Getenv("GOPATH"),
-		ChaincodePath:   "github.com/BEP/chaincode/",
+		ChannelID: "bepchannel",
+		ChannelConfig: "/home/sher/go/src/github.com/BEP/fixtures/channel-artifacts/channel.tx",
 
-		OrgAdmin:        "Admin",
-		OrgName:         "OrgAlibaba",
-		OrgID:			 "OrgAlibaba.BEP.com",
-		ConfigFile:      "/home/sher/go/src/github.com/BEP/config.yaml",
+		OrgAdmin:"Admin",
+		OrgName:"Org1",
+		OrdererOrgName: "orderer.bep.com",
 
-		// User parameters
-		UserName: "User1",
 	}
 
-	// Initialization of the Fabric SDK from the previously set properties
-	err := fSetup.Initialize()
+	sdk, err := sdkInit.SetupSDK(configFile, initialized)
 	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v \n", err)
+		fmt.Printf(err.Error())
 		return
 	}
 
-	// Install and instantiate the chaincode
-	err = fSetup.InstallAndInstantiateCC()
+	defer sdk.Close()
+
+	err = sdkInit.CreateChannel(sdk, initInfo)
 	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+		fmt.Println(err.Error())
 		return
 	}
 
-	// Close SDK
-	defer fSetup.CloseSDK()
 }

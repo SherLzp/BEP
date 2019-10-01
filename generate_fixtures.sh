@@ -1,8 +1,8 @@
 cryptogen generate --config=./crypto-config.yaml
+configtxgen -profile BEPOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
 
-configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channelartifacts/channel.tx -channelID bepchannel
+configtxgen -profile BEPChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID bepchannel
 
-configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/OrgAlibabaMSPanchors.tx -channelID bepchannel -asOrg OrgAlibabaMSP
+configtxgen -profile BEPChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID bepchannel -asOrg Org1MSP
 
-configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/OrgBaiduMSPanchors.tx -channelID bepchannel -asOrg OrgBaiduMSP
-
+configtxgen -profile BEPChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID bepchannel -asOrg Org2MSP
