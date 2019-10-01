@@ -11,4 +11,9 @@ type InitInfo struct {
 	OrgName       string // 组织名称层
 	OrdererOrgName	string // Orderer组织名称
 	OrgResMgmt *resmgmt.Client
+
+	ChaincodeID	string
+	ChaincodeGoPath	string
+	ChaincodePath	string
+	UserName	string
 }

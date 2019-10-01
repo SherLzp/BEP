@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/BEP/sdkInit"
+	"os"
 )
 
 const (
@@ -22,6 +23,11 @@ func main() {
 		OrgName:"Org1",
 		OrdererOrgName: "orderer.bep.com",
 
+		ChaincodeID: SimpleCC,
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath: "github.com/BEP/chaincode/",
+		UserName:"User1",
+
 	}
 
 	sdk, err := sdkInit.SetupSDK(configFile, initialized)
@@ -37,5 +43,12 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+
+	channelClient, err := sdkInit.InstallAndInstantiateCC(sdk, initInfo)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(channelClient)
 
 }
