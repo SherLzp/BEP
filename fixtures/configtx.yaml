@@ -179,7 +179,7 @@ Orderer: &OrdererDefaults
 ################################################################################
 Profiles:
 
-    TwoOrgsOrdererGenesis:
+    BEPOrdererGenesis:
         Capabilities:
             <<: *ChannelCapabilities
         Orderer:
@@ -193,7 +193,7 @@ Profiles:
                 Organizations:
                     - *Org1
                     - *Org2
-    TwoOrgsChannel:
+    BEPChannel:
         Consortium: SampleConsortium
         Application:
             <<: *ApplicationDefaults
