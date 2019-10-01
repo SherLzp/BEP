@@ -26,7 +26,7 @@ Organizations:
 
         # MSPDir is the filesystem path which contains the MSP configuration
         MSPDir: crypto-config/ordererOrganizations/bep.com/msp
-	Policies: &OrdererOrgPolicies
+    Policies: &OrdererOrgPolicies
             Readers:
                 Type: Signature
                 Rule: "OR('OrdererMSP.member')"
@@ -46,7 +46,7 @@ Organizations:
         ID: Org1MSP
 
         MSPDir: crypto-config/peerOrganizations/org1.bep.com/msp
-	Policies: &Org1Policies
+    Policies: &Org1Policies
             Readers:
                 Type: Signature
                 Rule: "OR('Org1MSP.member')"
@@ -72,7 +72,7 @@ Organizations:
         ID: Org2MSP
 
         MSPDir: crypto-config/peerOrganizations/org2.bep.com/msp
-	Policies: &Org2Policies
+    Policies: &Org2Policies
             Readers:
                 Type: Signature
                 Rule: "OR('Org2MSP.member')"
@@ -221,7 +221,7 @@ Profiles:
                 Organizations:
                     - *Org1
                     - *Org2
-	Policies:
+        Policies:
             <<: *OrdererOrgPolicies
             Admins:
                 Type: Signature
@@ -235,7 +235,7 @@ Profiles:
                 - *Org2
             Capabilities:
                 <<: *ApplicationCapabilities
-	    Policies:
+        Policies:
                 <<: *OrdererOrgPolicies
                 Admins:
                     Type: Signature
