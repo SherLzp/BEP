@@ -17,7 +17,7 @@ func main() {
 	initInfo := &sdkInit.InitInfo{
 
 		ChannelID: "bepchannel",
-		ChannelConfig: "/home/sher/go/src/github.com/BEP/fixtures/channel-artifacts/channel.tx",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/fixtures/channel-artifacts/channel.tx",
 
 		OrgAdmin:"Admin",
 		OrgName:"Org1",
