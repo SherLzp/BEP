@@ -6,9 +6,35 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 )
 
-func (t *ServiceSetup) PushReq(req Request) (string, error) {
+func (t *ServiceSetup) CreateUser(usr User) (string, error) {
 
-	eventID := "eventAddReq"
+	eventID := "eventCreateUser"
+	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
+	defer t.Client.UnregisterChaincodeEvent(reg)
+
+	// 将usr对象序列化成为字节数组
+	b, err := json.Marshal(usr)
+	if err != nil {
+		return "", fmt.Errorf("指定的usr对象序列化时发生错误")
+	}
+
+	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "CreateUser", Args: [][]byte{b, []byte(eventID)}}
+	respone, err := t.Client.Execute(request)
+	if err != nil {
+		return "", err
+	}
+
+	err = eventResult(notifier, eventID)
+	if err != nil {
+		return "", err
+	}
+
+	return string(respone.TransactionID), nil
+}
+
+func (t *ServiceSetup) PushRequest(req Request) (string, error) {
+
+	eventID := "eventPushRequest"
 	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
 	defer t.Client.UnregisterChaincodeEvent(reg)
 
@@ -32,9 +58,9 @@ func (t *ServiceSetup) PushReq(req Request) (string, error) {
 	return string(respone.TransactionID), nil
 }
 
-func (t *ServiceSetup) PushRes(res Response) (string, error) {
+func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 
-	eventID := "eventAddRes"
+	eventID := "eventPushRespone"
 	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
 	defer t.Client.UnregisterChaincodeEvent(reg)
 
@@ -58,9 +84,35 @@ func (t *ServiceSetup) PushRes(res Response) (string, error) {
 	return string(respone.TransactionID), nil
 }
 
-func (t *ServiceSetup) FindAllRequest(certNo, name string) ([]byte, error){
+func (t *ServiceSetup) AcceptResponse(req Request) (string, error) {
 
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryAllRequest", Args: [][]byte{[]byte(certNo), []byte(name)}}
+	eventID := "eventAcceptResponse"
+	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
+	defer t.Client.UnregisterChaincodeEvent(reg)
+
+	// 将req对象序列化成为字节数组
+	b, err := json.Marshal(req)
+	if err != nil {
+		return "", fmt.Errorf("指定的req对象序列化时发生错误")
+	}
+
+	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "AcceptResponse", Args: [][]byte{b, []byte(eventID)}}
+	respone, err := t.Client.Execute(request)
+	if err != nil {
+		return "", err
+	}
+
+	err = eventResult(notifier, eventID)
+	if err != nil {
+		return "", err
+	}
+
+	return string(respone.TransactionID), nil
+}
+
+func (t *ServiceSetup) QueryAllRequest() ([]byte, error){
+
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryAllRequest"}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return []byte{0x00}, err
@@ -69,9 +121,9 @@ func (t *ServiceSetup) FindAllRequest(certNo, name string) ([]byte, error){
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) FindRequestByUserId(certNo, name string) ([]byte, error){
+func (t *ServiceSetup) QueryRequestByUserId(userId string) ([]byte, error){
 
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryRequestByUserId", Args: [][]byte{[]byte(certNo), []byte(name)}}
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryRequestByUserId", Args: [][]byte{[]byte(userId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return []byte{0x00}, err
@@ -80,9 +132,9 @@ func (t *ServiceSetup) FindRequestByUserId(certNo, name string) ([]byte, error){
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) FindResponseByUserId(certNo, name string) ([]byte, error){
+func (t *ServiceSetup) QueryResponseByUserId(userId string) ([]byte, error){
 
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByUserId", Args: [][]byte{[]byte(certNo), []byte(name)}}
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByUserId", Args: [][]byte{[]byte(userId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return []byte{0x00}, err
@@ -91,9 +143,9 @@ func (t *ServiceSetup) FindResponseByUserId(certNo, name string) ([]byte, error)
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) FindBalanceByUserId(certNo, name string) ([]byte, error){
+func (t *ServiceSetup) QueryBalanceByUserId(userId string) ([]byte, error){
 
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryBalanceByUserId", Args: [][]byte{[]byte(certNo), []byte(name)}}
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryBalanceByUserId", Args: [][]byte{[]byte(userId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return []byte{0x00}, err
@@ -102,9 +154,9 @@ func (t *ServiceSetup) FindBalanceByUserId(certNo, name string) ([]byte, error){
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) FindResponseByRequestId(certNo, name string) ([]byte, error){
+func (t *ServiceSetup) QueryResponseByRequestId(reqId string) ([]byte, error){
 
-	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByRequestId", Args: [][]byte{[]byte(certNo), []byte(name)}}
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByRequestId", Args: [][]byte{[]byte(reqId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return []byte{0x00}, err

@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"fmt"
-	"time"
+	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
+	"time"
 )
 
 type Request struct {
