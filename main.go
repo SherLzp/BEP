@@ -8,27 +8,25 @@ import (
 )
 
 const (
-	configFile = "config.yaml"
+	configFile  = "config.yaml"
 	initialized = false
-	SimpleCC = "simplecc"
+	BepCC       = "bepcc"
 )
 
 func main() {
-
 	initInfo := &sdkInit.InitInfo{
 
-		ChannelID: "bepchannel",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/fixtures/channel-artifacts/channel.tx",
+		ChannelID:     "kevinkongyixueyuan",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/BEP/fixtures/artifacts/channel.tx",
 
-		OrgAdmin:"Admin",
-		OrgName:"Org1",
-		OrdererOrgName: "orderer.bep.com",
+		OrgAdmin:       "Admin",
+		OrgName:        "Org1",
+		OrdererOrgName: "orderer.kevin.kongyixueyuan.com",
 
-		ChaincodeID: SimpleCC,
+		ChaincodeID:     BepCC,
 		ChaincodeGoPath: os.Getenv("GOPATH"),
-		ChaincodePath: "github.com/BEP/chaincode/",
-		UserName:"User1",
-
+		ChaincodePath:   "github.com/BEP/chaincode/",
+		UserName:        "User1",
 	}
 
 	sdk, err := sdkInit.SetupSDK(configFile, initialized)
@@ -52,47 +50,46 @@ func main() {
 	}
 	fmt.Println(channelClient)
 
-	// interact with fabric network
 	serviceSetup := service.ServiceSetup{
-		ChaincodeID: SimpleCC,
-		Client: channelClient,
+		ChaincodeID: BepCC,
+		Client:      channelClient,
 	}
 
-	req1 := service.Request{
-		RequestId: "1",
-		Owner: "p1",
-		Requirement: "I want an apple",
-		Reward: 5.12,
-		Status: 0,
-		CreateTime: "2019-10-01-16-35",
-		ExpiredTime: "2019-10-07-16-35",
+	request1 := service.Request{
+		RequestId:      "Request_001",
+		Owner:          "Sher",
+		Requirement:    "I want sher's passport",
+		Reward:         1.0,
+		Status:         0,
+		CreateTime:     "2019-10-01 10:00:00",
+		ExpiredTime:    "2019-10-11 10:00:00",
 		AcceptResponse: "",
-		Responses: nil,
+		Responses:      nil,
 	}
 
-	req2 := service.Request{
-		RequestId: "2",
-		Owner: "p2",
-		Requirement: "I want a banana",
-		Reward: 10.24,
-		Status: 0,
-		CreateTime: "2019-10-01-16-35",
-		ExpiredTime: "2019-10-07-16-35",
+	request2 := service.Request{
+		RequestId:      "Request_002",
+		Owner:          "Sher",
+		Requirement:    "I want sher's driver license",
+		Reward:         10.0,
+		Status:         0,
+		CreateTime:     "2019-10-11 10:00:00",
+		ExpiredTime:    "2019-10-21 10:00:00",
 		AcceptResponse: "",
-		Responses: nil,
+		Responses:      nil,
 	}
 
-	msg, err := serviceSetup.PushRequest(req1)
+	msg, err := serviceSetup.PushRequest(request1)
 	if err != nil {
 		fmt.Println(err.Error())
-	}else {
-		fmt.Println("信息发布成功, 交易编号为: " + msg)
+	} else {
+		fmt.Println("Add Request successfully, transaction id is: ", msg)
 	}
 
-	msg, err = serviceSetup.PushRequest(req2)
+	msg, err = serviceSetup.PushRequest(request2)
 	if err != nil {
 		fmt.Println(err.Error())
-	}else {
-		fmt.Println("信息发布成功, 交易编号为: " + msg)
+	} else {
+		fmt.Println("Add Request successfully, transaction id is: ", msg)
 	}
 }

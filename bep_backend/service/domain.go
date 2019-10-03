@@ -33,25 +33,28 @@ type User struct {
 }
 
 type ServiceSetup struct {
-	ChaincodeID    string
-	Client    *channel.Client
+	ChaincodeID string
+	Client      *channel.Client
 }
 
 func regitserEvent(client *channel.Client, chaincodeID, eventID string) (fab.Registration, <-chan *fab.CCEvent) {
 
 	reg, notifier, err := client.RegisterChaincodeEvent(chaincodeID, eventID)
 	if err != nil {
-		fmt.Println("注册链码事件失败: %s", err)
+		fmt.Println("fail to register chaincode event: %s", err)
 	}
+	fmt.Println("register chaincode event successfully: ", len(notifier))
 	return reg, notifier
 }
 
 func eventResult(notifier <-chan *fab.CCEvent, eventID string) error {
+	fmt.Println("get event id: ", eventID)
+	fmt.Println("get notifier: ", len(notifier))
 	select {
 	case ccEvent := <-notifier:
-		fmt.Printf("接收到链码事件: %v\n", ccEvent)
-	case <-time.After(time.Second * 5):
-		return fmt.Errorf("不能根据指定的事件ID接收到相应的链码事件(%s)", eventID)
+		fmt.Printf("receive chaincode event: %v\n", ccEvent)
+	case <-time.After(time.Second * 60):
+		return fmt.Errorf("cannot receive special chaincode event by event id(%s)", eventID)
 	}
 	return nil
 }
