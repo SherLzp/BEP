@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	pd "github.com/hyperledger/fabric/protos/peer"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	pd "github.com/hyperledger/fabric/protos/peer"
 )
 
 type BepChaincode struct{}
@@ -46,6 +46,6 @@ func main() {
 	// Start the chaincode and make it ready for futures requests
 	err := shim.Start(new(BepChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Heroes Service chaincode: %s", err)
+		fmt.Printf("Error starting BEP Service chaincode: %s", err)
 	}
 }

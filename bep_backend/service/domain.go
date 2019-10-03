@@ -43,13 +43,10 @@ func regitserEvent(client *channel.Client, chaincodeID, eventID string) (fab.Reg
 	if err != nil {
 		fmt.Println("fail to register chaincode event: %s", err)
 	}
-	fmt.Println("register chaincode event successfully: ", len(notifier))
 	return reg, notifier
 }
 
 func eventResult(notifier <-chan *fab.CCEvent, eventID string) error {
-	fmt.Println("get event id: ", eventID)
-	fmt.Println("get notifier: ", len(notifier))
 	select {
 	case ccEvent := <-notifier:
 		fmt.Printf("receive chaincode event: %v\n", ccEvent)
