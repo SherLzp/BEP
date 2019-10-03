@@ -15,11 +15,12 @@ const (
 
 /* Create a user */
 func (t *BepChaincode) CreateUser(stub shim.ChaincodeStubInterface, args []string) pd.Response {
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
+
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2(userid, event)")
 	}
 	userId := args[0]
-	balance := 0.0
+	balance := 100.0
 	user := User{userId, balance}
 
 	// convert struct to json
@@ -32,10 +33,42 @@ func (t *BepChaincode) CreateUser(stub shim.ChaincodeStubInterface, args []strin
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+
+	err = stub.SetEvent(args[1], []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	return shim.Success(userJSONasBytes)
 }
 
+/* Push a request to the ledger */
+func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2(request, event)")
+	}
+	var cur_request Request
+
+	err := json.Unmarshal([]byte(args[0]), &cur_request)
+	if err != nil {
+		return shim.Error("error when deserialize Request")
+	}
+	_, status := PutRequest(stub, cur_request)
+	if !status {
+		return shim.Error("error when PutRequest")
+	}
+
+	err = stub.SetEvent(args[1], []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success([]byte("Push Request successfully"))
+}
+
 func PutRequest(stub shim.ChaincodeStubInterface, request Request) ([]byte, bool) {
+
 	requestJSONasBytes, err := json.Marshal(request)
 	if err != nil {
 		return nil, false
@@ -60,17 +93,40 @@ func PutRequest(stub shim.ChaincodeStubInterface, request Request) ([]byte, bool
 	return nil, true
 }
 
-/* Push a request to the ledger */
-func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+/* Push a response to a specific request */
+func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+
 	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2(request,event)")
+		return shim.Error("Incorrect number of arguments. Expecting 2(request, event)")
 	}
-	var request Request
-	err := json.Unmarshal([]byte(args[0]), &request)
+	var cur_response Response
+
+	err := json.Unmarshal([]byte(args[0]), &cur_response)
 	if err != nil {
 		return shim.Error("error when deserialize Request")
 	}
-	_, status := PutRequest(stub, request)
+
+	// check if the request exists
+	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", cur_response.RequestId})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	requestAsBytes, err := stub.GetState(requestKey)
+	if err != nil {
+		return shim.Error("The request does not exist: " + err.Error())
+	}
+
+	// check : whether this user push the request
+	request := Request{}
+	err = json.Unmarshal(requestAsBytes, &request)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if request.Owner == cur_response.Owner {
+		return shim.Error("You cannot answer your own question")
+	}
+
+	_, status := PutResponse(stub, requestKey, request, cur_response)
 	if !status {
 		return shim.Error("error when PutRequest")
 	}
@@ -83,96 +139,151 @@ func (t *BepChaincode) PushRequest(stub shim.ChaincodeStubInterface, args []stri
 	return shim.Success([]byte("Push Request successfully"))
 }
 
-/* Push a response to a specific request */
-func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
-
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments. Expecting 5(request_id, response_id, user_id, answer, create_time)")
-	}
-	requestId := args[0]
-	// check if the request exists
-	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	requestAsBytes, err := stub.GetState(requestKey)
-	if err != nil {
-		return shim.Error("The request does not exist: " + err.Error())
-	}
-	responseId := args[1]
-	userId := args[2]
-
-	// check : whether this user push the request
-	request := Request{}
-	err = json.Unmarshal(requestAsBytes, &request)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	if request.Owner == userId {
-		return shim.Error("You cannot answer your own question")
-	}
-
-	answer := args[3]
-	createTime := args[4]
-	response := Response{
-		RequestId:  requestId,
-		ResponseId: responseId,
-		Owner:      userId,
-		Answer:     answer,
-		CreateTime: createTime,
-	}
+func PutResponse(stub shim.ChaincodeStubInterface, requestKey string, request Request, response Response) ([]byte, bool) {
 
 	// add : put the response into the request
 	request.Responses = append(request.Responses, response)
-	requestAsBytes, err = json.Marshal(request)
+	requestAsBytes, err := json.Marshal(request)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
-	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
+	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{response.Owner, response.RequestId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 	err = stub.PutState(requestKey, requestAsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 	err = stub.PutState(userRequestKey, requestAsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 
 	// add : put the response into the ledger
-	responseKey, err := stub.CreateCompositeKey("Response", []string{requestId, responseId})
+	responseKey, err := stub.CreateCompositeKey("Response", []string{response.RequestId, response.ResponseId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
-	userResponseKey, err := stub.CreateCompositeKey("User_Response", []string{userId, responseId})
+	userResponseKey, err := stub.CreateCompositeKey("User_Response", []string{response.Owner, response.ResponseId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 	responseJSONasBytes, err := json.Marshal(response)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 	err = stub.PutState(responseKey, responseJSONasBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
 	err = stub.PutState(userResponseKey, responseJSONasBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
-	err = stub.PutState(responseId, responseJSONasBytes)
+	err = stub.PutState(response.ResponseId, responseJSONasBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return nil, false
 	}
-	return shim.Success(responseJSONasBytes)
+	return nil, true
 }
+
+//func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
+//
+//	if len(args) != 6 {
+//		return shim.Error("Incorrect number of arguments. Expecting 6(request_id, response_id, owner, answer, create_time, event)")
+//	}
+//	requestId := args[0]
+//	// check if the request exists
+//	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	requestAsBytes, err := stub.GetState(requestKey)
+//	if err != nil {
+//		return shim.Error("The request does not exist: " + err.Error())
+//	}
+//	responseId := args[1]
+//	userId := args[2]
+//
+//	// check : whether this user push the request
+//	request := Request{}
+//	err = json.Unmarshal(requestAsBytes, &request)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	if request.Owner == userId {
+//		return shim.Error("You cannot answer your own question")
+//	}
+//
+//	answer := args[3]
+//	createTime := args[4]
+//	response := Response{
+//		RequestId:  requestId,
+//		ResponseId: responseId,
+//		Owner:      userId,
+//		Answer:     answer,
+//		CreateTime: createTime,
+//	}
+//
+//	// add : put the response into the request
+//	request.Responses = append(request.Responses, response)
+//	requestAsBytes, err = json.Marshal(request)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	err = stub.PutState(requestKey, requestAsBytes)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	err = stub.PutState(userRequestKey, requestAsBytes)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//
+//	// add : put the response into the ledger
+//	responseKey, err := stub.CreateCompositeKey("Response", []string{requestId, responseId})
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	userResponseKey, err := stub.CreateCompositeKey("User_Response", []string{userId, responseId})
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	responseJSONasBytes, err := json.Marshal(response)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	err = stub.PutState(responseKey, responseJSONasBytes)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	err = stub.PutState(userResponseKey, responseJSONasBytes)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//	err = stub.PutState(responseId, responseJSONasBytes)
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//
+//	err = stub.SetEvent(args[5], []byte{})
+//	if err != nil {
+//		return shim.Error(err.Error())
+//	}
+//
+//	return shim.Success(responseJSONasBytes)
+//}
 
 /* Push a accept to a specific response */
 func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
-	if len(args) != 3 {
-		return shim.Error("Incorrect number of arguments. Expecting 3(user_id, request_id, response_id)")
+
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments. Expecting 4(user_id, request_id, response_id, event)")
 	}
 	userId := args[0]
 	requestId := args[1]
@@ -246,11 +357,17 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+
+	err = stub.SetEvent(args[3], []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
 	return shim.Success(nil)
 }
 
 /* Query all requests in the ledger */
 func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface) pd.Response {
+
 	resultIter, err := stub.GetStateByPartialCompositeKey("Request", []string{"request"})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
