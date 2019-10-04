@@ -41,7 +41,7 @@ func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 	// 将res对象序列化成为字节数组
 	b, err := json.Marshal(res)
 	if err != nil {
-		return "", fmt.Errorf("error when serialize Request")
+		return "", fmt.Errorf("error when serialize Response")
 	}
 
 	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "PushRespone", Args: [][]byte{b, []byte(eventID)}}
