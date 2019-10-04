@@ -20,7 +20,7 @@ func (t *BepChaincode) CreateUser(stub shim.ChaincodeStubInterface, args []strin
 		return shim.Error("Incorrect number of arguments. Expecting 2(userid, event)")
 	}
 	userId := args[0]
-	balance := 100.0
+	balance := 0.0
 	user := User{userId, balance}
 
 	// convert struct to json
@@ -97,13 +97,13 @@ func PutRequest(stub shim.ChaincodeStubInterface, request Request) ([]byte, bool
 func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
 
 	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2(request, event)")
+		return shim.Error("Incorrect number of arguments. Expecting 2(response, event)")
 	}
 	var cur_response Response
 
 	err := json.Unmarshal([]byte(args[0]), &cur_response)
 	if err != nil {
-		return shim.Error("error when deserialize Request")
+		return shim.Error("error when deserialize Response")
 	}
 
 	// check if the request exists
@@ -123,12 +123,12 @@ func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []str
 		return shim.Error(err.Error())
 	}
 	if request.Owner == cur_response.Owner {
-		return shim.Error("You cannot answer your own question")
+		return shim.Error("You cannot answer your own request")
 	}
 
 	_, status := PutResponse(stub, requestKey, request, cur_response)
 	if !status {
-		return shim.Error("error when PutRequest")
+		return shim.Error("error when PutResponse")
 	}
 
 	err = stub.SetEvent(args[1], []byte{})
@@ -136,7 +136,7 @@ func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []str
 		return shim.Error(err.Error())
 	}
 
-	return shim.Success([]byte("Push Request successfully"))
+	return shim.Success([]byte("Push Response successfully"))
 }
 
 func PutResponse(stub shim.ChaincodeStubInterface, requestKey string, request Request, response Response) ([]byte, bool) {
@@ -185,7 +185,7 @@ func PutResponse(stub shim.ChaincodeStubInterface, requestKey string, request Re
 	if err != nil {
 		return nil, false
 	}
-	return nil, true
+	return responseJSONasBytes, true
 }
 
 //func (t *BepChaincode) PushResponse(stub shim.ChaincodeStubInterface, args []string) pd.Response {
@@ -288,19 +288,20 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	userId := args[0]
 	requestId := args[1]
 	responseId := args[2]
+
 	// check whether the user is the owner of the request
 	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", requestId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when create requestKey")
 	}
 	requestAsBytes, err := stub.GetState(requestKey)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when get requestAsBytes")
 	}
 	request := Request{}
 	err = json.Unmarshal(requestAsBytes, &request)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when unmarshal requestAsBytes")
 	}
 	if userId != request.Owner {
 		return shim.Error("You are not the owner of the request")
@@ -309,7 +310,7 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	// check the response exists
 	responseAsBytes, err := stub.GetState(responseId)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when get responseAsBytes")
 	}
 
 	// if everything is ok, then change the request state
@@ -321,46 +322,46 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 	}
 	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{userId, requestId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when create userRequestKey")
 	}
 	err = stub.PutState(requestKey, requestAsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when put request into the ledger")
 	}
 	err = stub.PutState(userRequestKey, requestAsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when put user's request into the ledger")
 	}
 
 	// reward the responser
 	response := Response{}
 	err = json.Unmarshal(responseAsBytes, &response)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when unmarshal responseAsBytes")
 	}
 	userAsBytes, err := stub.GetState(response.Owner)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when get userAsBytes")
 	}
 	user := User{}
 	err = json.Unmarshal(userAsBytes, &user)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when unmarshal userAsBytes")
 	}
 	reward := request.Reward
 	user.Balance = user.Balance + reward
 	userAsBytes, err = json.Marshal(user)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when marshal userAsBytes after rewarding")
 	}
 	err = stub.PutState(response.Owner, userAsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when put response's owner into ledger")
 	}
 
 	err = stub.SetEvent(args[3], []byte{})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("error when set AcceptResponseEvent")
 	}
 	return shim.Success(nil)
 }

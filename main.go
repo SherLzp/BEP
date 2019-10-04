@@ -56,25 +56,7 @@ func main() {
 		Client:      channelClient,
 	}
 
-	request1 := service.Request{
-		RequestId:      "Request_001",
-		Owner:          "Sher",
-		Requirement:    "I want Sher's passport",
-		Reward:         1.0,
-		Status:         0,
-		CreateTime:     "2019-10-01 10:00:00",
-		ExpiredTime:    "2019-10-12 10:00:00",
-		AcceptResponse: "",
-		Responses:      nil,
-	}
-
-	response1 := service.Response{
-		RequestId:      "Request_001",
-		ResponseId:		"Response_001",
-		Owner:          "Jack",
-		Answer:			"It's in /home/machine/passport/Sher",
-		CreateTime:     "2019-10-11 10:00:00",
-	}
+	//-------------------------------------开始测试------------------------------------------------
 
 	msg, err := serviceSetup.CreateUser("Sher")
 	if err != nil {
@@ -88,6 +70,26 @@ func main() {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Println("Add User successfully, transaction id is: ", msg)
+	}
+
+	request1 := service.Request{
+		RequestId:      "Request_001",
+		Owner:          "Sher",
+		Requirement:    "I want Sher's passport",
+		Reward:         1.0,
+		Status:         0,
+		CreateTime:     "2019-10-01 10:00:00",
+		ExpiredTime:    "2019-10-12 10:00:00",
+		AcceptResponse: "",
+		Responses:      nil,
+	}
+
+	response1 := service.Response{
+		RequestId:  "Request_001",
+		ResponseId: "Response_001",
+		Owner:      "Jack",
+		Answer:     "It's in /home/machine/passport/Sher",
+		CreateTime: "2019-10-11 10:00:00",
 	}
 
 	msg, err = serviceSetup.PushRequest(request1)
@@ -107,7 +109,6 @@ func main() {
 		fmt.Println("This request belongs to:" + request.Owner + ", it's create time is:" + request.CreateTime)
 	}
 
-	// the 2 func below have bugs.
 	msg, err = serviceSetup.PushRespone(response1)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -115,7 +116,7 @@ func main() {
 		fmt.Println("Add Respone successfully, transaction id is: ", msg)
 	}
 
-	msg, err = serviceSetup.AcceptResponse("Sher", request1, response1)
+	msg, err = serviceSetup.AcceptResponse("Sher", request1.RequestId, response1.ResponseId)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {

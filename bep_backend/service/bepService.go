@@ -44,7 +44,7 @@ func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 		return "", fmt.Errorf("error when serialize Response")
 	}
 
-	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "PushRespone", Args: [][]byte{b, []byte(eventID)}}
+	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "PushResponse", Args: [][]byte{b, []byte(eventID)}}
 	respone, err := t.Client.Execute(request)
 	if err != nil {
 		return "", err
@@ -58,23 +58,15 @@ func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 	return string(respone.TransactionID), nil
 }
 
-func (t *ServiceSetup) AcceptResponse(userId string, requestId Request, responseid Response) (string, error) {
+func (t *ServiceSetup) AcceptResponse(userId string, requestId string, responseId string) (string, error) {
 
 	eventID := "eventAcceptResponse"
 	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
 	defer t.Client.UnregisterChaincodeEvent(reg)
 
 	b1 := []byte(userId)
-
-	b2, err := json.Marshal(requestId)
-	if err != nil {
-		return "", fmt.Errorf("指定的request对象序列化时发生错误")
-	}
-
-	b3, err := json.Marshal(responseid)
-	if err != nil {
-		return "", fmt.Errorf("指定的response对象序列化时发生错误")
-	}
+	b2 := []byte(requestId)
+	b3 := []byte(responseId)
 
 	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "AcceptResponse", Args: [][]byte{b1, b2, b3, []byte(eventID)}}
 	respone, err := t.Client.Execute(request)
@@ -90,19 +82,13 @@ func (t *ServiceSetup) AcceptResponse(userId string, requestId Request, response
 	return string(respone.TransactionID), nil
 }
 
-func (t *ServiceSetup) CreateUser(usrid string) (string, error) {
+func (t *ServiceSetup) CreateUser(userId string) (string, error) {
 
 	eventID := "eventCreateUser"
 	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
 	defer t.Client.UnregisterChaincodeEvent(reg)
 
-	// 将usr对象序列化成为字节数组
-	b, err := json.Marshal(usrid)
-	if err != nil {
-		return "", fmt.Errorf("error when serialize User")
-	}
-
-	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "CreateUser", Args: [][]byte{b, []byte(eventID)}}
+	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "CreateUser", Args: [][]byte{[]byte(userId), []byte(eventID)}}
 	respone, err := t.Client.Execute(request)
 	if err != nil {
 		return "", err
