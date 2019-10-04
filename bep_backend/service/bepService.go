@@ -83,7 +83,6 @@ func (t *ServiceSetup) AcceptResponse(userId string, requestId string, responseI
 }
 
 func (t *ServiceSetup) CreateUser(userId string) (string, error) {
-
 	eventID := "eventCreateUser"
 	reg, notifier := regitserEvent(t.Client, t.ChaincodeID, eventID)
 	defer t.Client.UnregisterChaincodeEvent(reg)

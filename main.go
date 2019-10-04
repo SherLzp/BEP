@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/BEP/bep_backend/handler"
+	_ "github.com/BEP/bep_backend/routers"
 	"github.com/BEP/bep_backend/service"
 	"github.com/BEP/sdkInit"
+	"github.com/astaxie/beego"
 	"os"
 )
 
@@ -56,8 +59,9 @@ func main() {
 		Client:      channelClient,
 	}
 
-	//-------------------------------------开始测试------------------------------------------------
+	//-------------------------------------test start------------------------------------------------
 
+	// create user Sher
 	msg, err := serviceSetup.CreateUser("Sher")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -65,6 +69,7 @@ func main() {
 		fmt.Println("Add User successfully, transaction id is: ", msg)
 	}
 
+	// create user Jack
 	msg, err = serviceSetup.CreateUser("Jack")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -72,6 +77,7 @@ func main() {
 		fmt.Println("Add User successfully, transaction id is: ", msg)
 	}
 
+	// create a request
 	request1 := service.Request{
 		RequestId:      "Request_001",
 		Owner:          "Sher",
@@ -84,6 +90,7 @@ func main() {
 		Responses:      nil,
 	}
 
+	// create a response
 	response1 := service.Response{
 		RequestId:  "Request_001",
 		ResponseId: "Response_001",
@@ -92,6 +99,7 @@ func main() {
 		CreateTime: "2019-10-11 10:00:00",
 	}
 
+	// push request
 	msg, err = serviceSetup.PushRequest(request1)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -99,21 +107,50 @@ func main() {
 		fmt.Println("Add Request successfully, transaction id is: ", msg)
 	}
 
+	// query the request
 	result, err := serviceSetup.QueryRequestByUserId("Sher")
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		var request service.Request
 		json.Unmarshal(result, &request)
-		fmt.Println("根据userid查询request成功：")
 		fmt.Println("This request belongs to:" + request.Owner + ", it's create time is:" + request.CreateTime)
 	}
 
+	// push response
 	msg, err = serviceSetup.PushRespone(response1)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Println("Add Respone successfully, transaction id is: ", msg)
+	}
+
+	// query the response by requestId
+	result, err = serviceSetup.QueryResponseByRequestId(request1.RequestId)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		var response service.Response
+		json.Unmarshal(result, &response)
+		fmt.Println("This response belongs to: " + response.Owner + " and this response belongs to the request: " + response.RequestId)
+	}
+
+	// query the response by userId
+	result, err = serviceSetup.QueryResponseByUserId(response1.Owner)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		var response service.Response
+		json.Unmarshal(result, &response)
+		fmt.Println("This response belongs to: " + response.Owner + " and this response belongs to the request: " + response.RequestId)
+	}
+
+	// query the balance before acceptResponse
+	result, err = serviceSetup.QueryBalanceByUserId(response1.Owner)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("user balance is: ", string(result))
 	}
 
 	msg, err = serviceSetup.AcceptResponse("Sher", request1.RequestId, response1.ResponseId)
@@ -123,4 +160,18 @@ func main() {
 		fmt.Println("AcceptResponse successfully, transaction id is: ", msg)
 	}
 
+	// query the balance before after acceptResponse
+	result, err = serviceSetup.QueryBalanceByUserId(response1.Owner)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("user balance after acceptResponse is: ", string(result))
+	}
+
+	//-------------------------------------test over----------------------------------------------
+	handler.App = handler.Application{
+		Setup: &serviceSetup,
+	}
+	// start the server
+	beego.Run()
 }
