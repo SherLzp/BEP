@@ -12,7 +12,7 @@ func init() {
 	beego.Router("/pushRequest", &controllers.BepController{}, "post:PushRequest")
 	beego.Router("/pushResponse", &controllers.BepController{}, "post:PushResponse")
 	beego.Router("/acceptResponse", &controllers.BepController{}, "post:AcceptResponse")
-	beego.Router("/getAllRequest", &controllers.BepController{}, "get:GetAllRequests")
+	beego.Router("/getAllRequests", &controllers.BepController{}, "get:GetAllRequests")
 	beego.Router("/getRequestByUserId", &controllers.BepController{}, "post:GetRequestByUserId")
 	beego.Router("/getResponseByUserId", &controllers.BepController{}, "post:GetResponseByUserId")
 	beego.Router("/getResponseByRequestId", &controllers.BepController{}, "post:GetResponseByRequestId")

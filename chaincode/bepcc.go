@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -147,7 +146,7 @@ func PutResponse(stub shim.ChaincodeStubInterface, requestKey string, request Re
 	if err != nil {
 		return nil, false
 	}
-	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{response.Owner, response.RequestId})
+	userRequestKey, err := stub.CreateCompositeKey("User_Request", []string{request.Owner, response.RequestId})
 	if err != nil {
 		return nil, false
 	}
@@ -368,32 +367,29 @@ func (t *BepChaincode) AcceptResponse(stub shim.ChaincodeStubInterface, args []s
 
 /* Query all requests in the ledger */
 func (t *BepChaincode) QueryAllRequest(stub shim.ChaincodeStubInterface) pd.Response {
-
+	var allRequests []Request
 	resultIter, err := stub.GetStateByPartialCompositeKey("Request", []string{"request"})
 	if err != nil {
 		return shim.Error("Failed to query requests: " + err.Error())
 	}
 	defer resultIter.Close()
 
-	// buffer is a JSON array containing QueryRecords
-	var buffer bytes.Buffer
-
-	bArrayMemberAlreadyWritten := false
 	for resultIter.HasNext() {
+		var requestInfo Request
 		queryResponse, err := resultIter.Next()
 		if err != nil {
 			return shim.Error("Fail to get request: " + err.Error())
 		}
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteByte('\n')
-		}
-
-		buffer.WriteString(string(queryResponse.Value))
-		bArrayMemberAlreadyWritten = true
+		json.Unmarshal(queryResponse.Value, &requestInfo)
+		allRequests = append(allRequests, requestInfo)
 	}
 
-	return shim.Success(buffer.Bytes())
+	jsonAsBytes, err := json.Marshal(allRequests)
+	if err != nil {
+		return shim.Error("Fail to marshal allRequest: " + err.Error())
+	}
+
+	return shim.Success(jsonAsBytes)
 }
 
 /* Query all requests pushed by UserId */
@@ -409,26 +405,23 @@ func (t *BepChaincode) QueryRequestByUserId(stub shim.ChaincodeStubInterface, ar
 	}
 	defer resultIter.Close()
 
-	// buffer is a JSON array containing QueryRecords
-	var buffer bytes.Buffer
+	var requests []Request
 
-	bArrayMemberAlreadyWritten := false
 	for resultIter.HasNext() {
+		var requestInfo Request
 		queryResponse, err := resultIter.Next()
 		if err != nil {
 			return shim.Error("Fail to get request: " + err.Error())
 		}
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString("\n")
-		}
-
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResponse.Value))
-		bArrayMemberAlreadyWritten = true
+		json.Unmarshal(queryResponse.Value, &requestInfo)
+		requests = append(requests, requestInfo)
+	}
+	jsonAsBytes, err := json.Marshal(requests)
+	if err != nil {
+		return shim.Error("Fail to marshal requests: " + err.Error())
 	}
 
-	return shim.Success(buffer.Bytes())
+	return shim.Success(jsonAsBytes)
 }
 
 /* Query all responses pushed by UserId */
@@ -443,27 +436,24 @@ func (t *BepChaincode) QueryResponseByUserId(stub shim.ChaincodeStubInterface, a
 	}
 	defer resultIter.Close()
 
-	// buffer is a JSON array containing QueryRecords
-	var buffer bytes.Buffer
+	var responses []Response
 
-	bArrayMemberAlreadyWritten := false
 	for resultIter.HasNext() {
 		queryResponse, err := resultIter.Next()
 		fmt.Printf("user response: %s\n", queryResponse.Value)
 		if err != nil {
 			return shim.Error("Fail to get response: " + err.Error())
 		}
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString("\n")
-		}
-
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResponse.Value))
-		bArrayMemberAlreadyWritten = true
+		var responseInfo Response
+		json.Unmarshal(queryResponse.Value, &responseInfo)
+		responses = append(responses, responseInfo)
 	}
 
-	return shim.Success(buffer.Bytes())
+	jsonAsBytes, err := json.Marshal(responses)
+	if err != nil {
+		return shim.Error("Fail to marshal response: " + err.Error())
+	}
+	return shim.Success(jsonAsBytes)
 }
 
 /* Query balancec by UserId */
@@ -491,40 +481,31 @@ func (t *BepChaincode) QueryBalanceByUserId(stub shim.ChaincodeStubInterface, ar
 /* Query all the responses by requestId */
 func (t *BepChaincode) QueryResponseByRequestId(stub shim.ChaincodeStubInterface, args []string) pd.Response {
 	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1(userid)")
+		return shim.Error("Incorrect number of arguments. Expecting 1(requestId)")
 	}
-	reqidAsString := args[0]
-	requestKey, err := stub.CreateCompositeKey("Request", []string{"request", reqidAsString})
+	requestId := args[0]
+	resultIter, err := stub.GetStateByPartialCompositeKey("Response", []string{requestId})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error("Failed to query response: " + err.Error())
 	}
-	requestAsByte, err := stub.GetState(requestKey)
+	defer resultIter.Close()
 
-	request := &Request{}
-	err = json.Unmarshal(requestAsByte, &request)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+	var responses []Response
 
-	// buffer is a JSON array containing QueryRecords
-	var buffer bytes.Buffer
-
-	bArrayMemberAlreadyWritten := false
-	for _, curRes := range request.Responses {
-
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString("\n")
-		}
-
-		responseAsByte, err := json.Marshal(curRes)
+	for resultIter.HasNext() {
+		queryResponse, err := resultIter.Next()
+		fmt.Printf("request response: %s\n", queryResponse.Value)
 		if err != nil {
-			return shim.Error(err.Error())
+			return shim.Error("Fail to get response: " + err.Error())
 		}
-
-		buffer.WriteString(string(responseAsByte))
-		bArrayMemberAlreadyWritten = true
+		var responseInfo Response
+		json.Unmarshal(queryResponse.Value, &responseInfo)
+		responses = append(responses, responseInfo)
 	}
 
-	return shim.Success(buffer.Bytes())
+	jsonAsBytes, err := json.Marshal(responses)
+	if err != nil {
+		return shim.Error("Fail to marshal response: " + err.Error())
+	}
+	return shim.Success(jsonAsBytes)
 }

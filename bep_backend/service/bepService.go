@@ -101,37 +101,34 @@ func (t *ServiceSetup) CreateUser(userId string) (string, error) {
 	return string(respone.TransactionID), nil
 }
 
-func (t *ServiceSetup) QueryAllRequest() ([]byte, error) {
-
+func (t *ServiceSetup) QueryAllRequest() (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryAllRequest"}
 	respone, err := t.Client.Query(req)
 	if err != nil {
-		return []byte{0x00}, err
+		return "", err
 	}
 
-	return respone.Payload, nil
+	return string(respone.Payload), nil
 }
 
-func (t *ServiceSetup) QueryRequestByUserId(userId string) ([]byte, error) {
-
+func (t *ServiceSetup) QueryRequestByUserId(userId string) (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryRequestByUserId", Args: [][]byte{[]byte(userId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
-		return []byte{0x00}, err
+		return "", nil
 	}
 
-	return respone.Payload, nil
+	return string(respone.Payload), nil
 }
 
-func (t *ServiceSetup) QueryResponseByUserId(userId string) ([]byte, error) {
-
+func (t *ServiceSetup) QueryResponseByUserId(userId string) (string, error) {
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByUserId", Args: [][]byte{[]byte(userId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
-		return []byte{0x00}, err
+		return "", err
 	}
 
-	return respone.Payload, nil
+	return string(respone.Payload), nil
 }
 
 func (t *ServiceSetup) QueryBalanceByUserId(userId string) ([]byte, error) {
@@ -145,13 +142,13 @@ func (t *ServiceSetup) QueryBalanceByUserId(userId string) ([]byte, error) {
 	return respone.Payload, nil
 }
 
-func (t *ServiceSetup) QueryResponseByRequestId(reqId string) ([]byte, error) {
+func (t *ServiceSetup) QueryResponseByRequestId(reqId string) (string, error) {
 
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByRequestId", Args: [][]byte{[]byte(reqId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
-		return []byte{0x00}, err
+		return "", err
 	}
 
-	return respone.Payload, nil
+	return string(respone.Payload), nil
 }

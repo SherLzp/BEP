@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/BEP/bep_backend/handler"
 	_ "github.com/BEP/bep_backend/routers"
@@ -107,16 +106,6 @@ func main() {
 		fmt.Println("Add Request successfully, transaction id is: ", msg)
 	}
 
-	// query the request
-	result, err := serviceSetup.QueryRequestByUserId("Sher")
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		var request service.Request
-		json.Unmarshal(result, &request)
-		fmt.Println("This request belongs to:" + request.Owner + ", it's create time is:" + request.CreateTime)
-	}
-
 	// push response
 	msg, err = serviceSetup.PushRespone(response1)
 	if err != nil {
@@ -125,47 +114,12 @@ func main() {
 		fmt.Println("Add Respone successfully, transaction id is: ", msg)
 	}
 
-	// query the response by requestId
-	result, err = serviceSetup.QueryResponseByRequestId(request1.RequestId)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		var response service.Response
-		json.Unmarshal(result, &response)
-		fmt.Println("This response belongs to: " + response.Owner + " and this response belongs to the request: " + response.RequestId)
-	}
-
-	// query the response by userId
-	result, err = serviceSetup.QueryResponseByUserId(response1.Owner)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		var response service.Response
-		json.Unmarshal(result, &response)
-		fmt.Println("This response belongs to: " + response.Owner + " and this response belongs to the request: " + response.RequestId)
-	}
-
-	// query the balance before acceptResponse
-	result, err = serviceSetup.QueryBalanceByUserId(response1.Owner)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println("user balance is: ", string(result))
-	}
-
+	// accept response
 	msg, err = serviceSetup.AcceptResponse("Sher", request1.RequestId, response1.ResponseId)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Println("AcceptResponse successfully, transaction id is: ", msg)
-	}
-
-	// query the balance before after acceptResponse
-	result, err = serviceSetup.QueryBalanceByUserId(response1.Owner)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println("user balance after acceptResponse is: ", string(result))
 	}
 
 	//-------------------------------------test over----------------------------------------------
