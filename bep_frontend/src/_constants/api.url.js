@@ -1,0 +1,23 @@
+const SERVER = 'http://192.168.43.246:8080'
+
+const BASE_URLS = {
+    REQUEST: SERVER + '/request',
+    RESPONSE: SERVER + '/response',
+    USER: SERVER + '/user',
+}
+
+export const API_URLS = {
+    // Request
+    REQUEST_SHOW_ALL_REQUESTS_URL: BASE_URLS.REQUEST + '/getAllRequests',
+    REQUEST_QUERY_REQUESTS_BY_USER_ID_URL: BASE_URLS.REQUEST + '/getRequestByUserId',
+    REQUEST_PUSH_REQUEST_URL: BASE_URLS.REQUEST + '/pushRequest',
+
+    // Response
+    RESPONSE_QUERY_RESPONSES_BY_USER_ID_URL: BASE_URLS.RESPONSE + '/getResponseByUserId',
+    RESPONSE_QUERY_RESPONSES_BY_REQUEST_ID_URL: BASE_URLS.RESPONSE + '/getResponseByRequestId',
+    RESPONSE_PUSH_RESPONSE_URL: BASE_URLS.RESPONSE + '/pushResponse',
+
+    //User
+    USER_QUERY_USER_BALANCE_BY_USER_ID_URL: BASE_URLS.USER + '/getUserBalance',
+    USER_ACCPET_RESPONSE_URL: BASE_URLS.USER + '/acceptResponse',
+}
