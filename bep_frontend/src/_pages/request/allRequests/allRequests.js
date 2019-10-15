@@ -7,11 +7,19 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Container from '@material-ui/core/Container'
-import { Button } from '@material-ui/core'
+import { Button, Grid, DialogActions } from '@material-ui/core'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
-import { Link } from 'react-router-dom'
 import { FETCH_STATUS } from '../../../_constants'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Draggable from 'react-draggable'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Typography from '@material-ui/core/Typography'
+import Switch from '@material-ui/core/Switch'
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -43,23 +51,38 @@ const useStyles = makeStyles(theme => ({
     rightIcon: {
         marginLeft: theme.spacing(1),
     },
+    input: {
+        display: 'none',
+    },
 }))
 
-function createData(description, owner, reward, status, expired, requestId) {
-    return { description, owner, reward, status, expired, requestId }
+function PaperComponent(props) {
+    return (
+        <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
+            <Paper {...props} />
+        </Draggable>
+    )
 }
 
-// const rows = [
-//     createData(`Is anyone has Lin's Passport?`, 'UnKnown', 10.0, 'Not completed', '2019-09-01', '001'),
-//     createData(`Is anyone has Lin's Driver License?`, 'UnKnown', 50.0, 'Failed', '2019-08-01', '002'),
-//     createData(`Is anyone has He's Passport?`, 'UnKnown', 30.0, 'Not completed', '2019-09-02', '003'),
-//     createData(`Is anyone has He's Driver License?`, 'UnKnown', 30.0, 'Not completed', '2019-09-03', '004'),
-//     createData(`How to go to Hangzhou?`, 'Sher', 2.0, 'Over', '2019-09-11', '005'),
-//     createData(`How to go to Beijing?`, 'Lin', 4.0, 'Over', '2019-07-22', '006'),
-// ]
+var description
+var requestId
+var answer
 
 export function AllRequestsContent(props) {
     const classes = useStyles()
+    const [open, setOpen] = React.useState(false)
+    const [state, setState] = React.useState({
+        checkedA: true,
+        answer: "",
+    })
+
+    const handleChangeSwitch = name => event => {
+        setState({ ...state, [name]: event.target.checked })
+    }
+
+    const handleChange = name => event => {
+        answer = event.target.value
+    }
 
     let rows = []
     useEffect(() => {
@@ -81,6 +104,24 @@ export function AllRequestsContent(props) {
                 <CircularProgress />
             </div>
         )
+    }
+
+    const handleClickOpen = (row) => {
+        setOpen(true)
+        description = row.requirement
+        requestId = row.request_id
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const onClickPushResponse = () => {
+        console.log('answer: ', answer)
+        props.pushResponseAsync(requestId, 'Jack', answer)
+        if (props.fetchStatus == FETCH_STATUS.FETCH_SUCCESS) {
+            alert('push response success')
+        }
     }
 
     return (
@@ -108,9 +149,9 @@ export function AllRequestsContent(props) {
                                 <TableCell align="right">{row.reward} $</TableCell>
                                 <TableCell align="right">{row.create_time}</TableCell>
                                 <TableCell align="right">{row.expired_time}</TableCell>
-                                <TableCell align="right">{row.status === 0? "Not Completed":row.status === 1?"Completed":"Expired"}</TableCell>
+                                <TableCell align="right">{row.status === 0 ? "Not Completed" : row.status === 1 ? "Completed" : "Expired"}</TableCell>
                                 <TableCell align="right">
-                                    {row.status === 0 ? <Button color="primary" component={Link} to="/requests/pushResponse">
+                                    {row.status === 0 ? <Button color="primary" onClick={() => handleClickOpen && handleClickOpen(row)}>
                                         Response
                                         <CloudUploadIcon className={classes.rightIcon} />
                                     </Button>
@@ -126,6 +167,72 @@ export function AllRequestsContent(props) {
                         ))}
                     </TableBody>
                 </Table>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    PaperComponent={PaperComponent}
+                    aria-labelledby="draggable-dialog-title"
+                    maxWidth={100}
+                >
+                    <DialogTitle id="draggable-dialog-title">
+                        <Typography align="center" variant="h4">Push Response</Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <Grid>
+                            <TextField
+                                id="standard-full-width"
+                                label="Request Description"
+                                style={{ margin: 8 }}
+                                value={description}
+                                fullWidth
+                                margin="normal"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+                        <Grid>
+                            <TextField
+                                id="standard-full-width"
+                                label="Your Response"
+                                style={{ margin: 8 }}
+                                placeholder="Just put your response"
+                                fullWidth
+                                margin="normal"
+                                onChange={handleChange('answer')}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+                        {/* <label>or</label>
+                        <Grid>
+                            <input
+                                accept="file/*"
+                                className={classes.input}
+                                id="outlined-button-file"
+                                multiple
+                                type="file"
+                            />
+                            <label htmlFor="outlined-button-file">
+                                <Button variant="outlined" component="span" className={classes.button}>
+                                    Upload
+                                </Button>
+                            </label>
+                        </Grid> */}
+                        <Grid>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={state.checkedA} onChange={handleChangeSwitch('checkedA')} value="checkedA" />
+                                }
+                                label="Keep anonymous"
+                            />
+                        </Grid>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={onClickPushResponse}>Push Response</Button>
+                    </DialogActions>
+                </Dialog>
             </Paper>
         </Container>
     )

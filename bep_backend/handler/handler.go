@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/BEP/bep_backend/models"
 	"github.com/BEP/bep_backend/service"
 	"github.com/astaxie/beego"
 	"github.com/satori/go.uuid"
@@ -92,13 +94,14 @@ func (app *Application) PushResponse(requestId string, owner string, answer stri
 		Answer:     answer,
 		CreateTime: createdTime,
 	}
+	fmt.Println("response: ",response)
 	tranId, err := app.Setup.PushRespone(response)
 	if err != nil {
 		return "", err
 	}
 	return tranId, nil
 }
-func (app *Application) GetResponseByUserId(userId string) ([]service.Response, error) {
+func (app *Application) GetResponseByUserId(userId string) ([]models.YourResponse, error) {
 	response, err := app.Setup.QueryResponseByUserId(userId)
 	if err != nil {
 		return nil, err
@@ -108,10 +111,30 @@ func (app *Application) GetResponseByUserId(userId string) ([]service.Response, 
 	if err != nil {
 		return nil, err
 	}
-	return responses, nil
+	var yourResponses []models.YourResponse
+	for _, res := range responses {
+		requestId := res.RequestId
+		response, err = app.Setup.QueryRequestByRequestId(requestId)
+		if err != nil {
+			return nil, err
+		}
+		var request service.Request
+		err = json.Unmarshal([]byte(response), &request)
+		if err != nil {
+			return nil, err
+		}
+		yourResponse := models.YourResponse{
+			Request:  request,
+			Response: res,
+		}
+		yourResponses = append(yourResponses, yourResponse)
+	}
+	return yourResponses, nil
 }
+
 func (app *Application) GetResponseByRequestId(requestId string) ([]service.Response, error) {
 	response, err := app.Setup.QueryResponseByRequestId(requestId)
+	fmt.Println("responseByRequestId: " + response)
 	if err != nil {
 		return nil, err
 	}
@@ -122,6 +145,32 @@ func (app *Application) GetResponseByRequestId(requestId string) ([]service.Resp
 	}
 	return responses, nil
 }
+
+func (app *Application) GetUserRequestAndResponses(userId string) ([]models.ReceivedResponse, error) {
+	requestsAsStr, err := app.Setup.QueryRequestByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	var requests []service.Request
+	err = json.Unmarshal([]byte(requestsAsStr), &requests)
+	if err != nil {
+		return nil, err
+	}
+	var receivedResponses []models.ReceivedResponse
+	for _, request := range requests {
+		responses, err := app.GetResponseByRequestId(request.RequestId)
+		if err != nil {
+			return nil, err
+		}
+		receivedResponse := models.ReceivedResponse{
+			Request:   request,
+			Responses: responses,
+		}
+		receivedResponses = append(receivedResponses, receivedResponse)
+	}
+	return receivedResponses, nil
+}
+
 func (app *Application) AcceptResponse(userId string, requestId string, responseId string) (string, error) {
 	tranId, err := app.Setup.AcceptResponse(userId, requestId, responseId)
 	if err != nil {

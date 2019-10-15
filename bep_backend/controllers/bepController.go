@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/BEP/bep_backend/handler"
+	"strconv"
 )
 
 type BepController struct {
@@ -45,7 +46,12 @@ func (this *BepController) PushRequest() {
 	requestData := this.JsonData()
 	userId := requestData["userId"].(string)
 	requirement := requestData["requirement"].(string)
-	reward := requestData["reward"].(float64)
+	rewardStr := requestData["reward"].(string)
+	reward, err := strconv.ParseFloat(rewardStr, 64)
+	if err != nil {
+		this.Error(UNKNOWN, "error when parse float64", err)
+		return
+	}
 	expiredTime := requestData["expiredTime"].(string)
 	tranId, err := handler.App.PushRequest(userId, requirement, reward, expiredTime)
 	if err != nil {
@@ -111,7 +117,7 @@ func (this *BepController) GetResponseByUserId() {
 	userId := requestData["userId"].(string)
 	responses, err := handler.App.GetResponseByUserId(userId)
 	if err != nil {
-		this.Error(UNKNOWN, "error when get response by userId", err)
+		this.Error(UNKNOWN, "error when get responses by userId", err)
 		return
 	}
 	this.Success(responses, "succeed to get response by userId")
@@ -127,4 +133,16 @@ func (this *BepController) GetResponseByRequestId() {
 		return
 	}
 	this.Success(responses, "succeed to get response by requestId")
+}
+
+func (this *BepController) GetUserRequestAndResponses() {
+	fmt.Println("call GetUserRequestAndResponses function")
+	requestData := this.JsonData()
+	userId := requestData["userId"].(string)
+	responses, err := handler.App.GetUserRequestAndResponses(userId)
+	if err != nil {
+		this.Error(UNKNOWN, "error when get user requests and responses", err)
+		return
+	}
+	this.Success(responses, "succeed to get user requests and responses")
 }

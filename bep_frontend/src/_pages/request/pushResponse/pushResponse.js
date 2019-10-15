@@ -42,7 +42,7 @@ export function PushResponseContent(props) {
         checkedA: false,
         checkedB: true,
     })
-
+    
     const handleChange = name => event => {
         setState({ ...state, [name]: event.target.checked })
     }
@@ -57,7 +57,7 @@ export function PushResponseContent(props) {
                     id="standard-full-width"
                     label="Request Description"
                     style={{ margin: 8 }}
-                    value="Is anyone has Lin's Passport?"
+                    value={props.description}
                     fullWidth
                     margin="normal"
                     InputLabelProps={{

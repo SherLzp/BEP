@@ -81,7 +81,20 @@ func main() {
 	request1 := service.Request{
 		RequestId:      "Request_001",
 		Owner:          "Sher",
-		Requirement:    "I want Sher's passport",
+		Requirement:    "I want Jack's passport",
+		Reward:         1.0,
+		Status:         0,
+		CreateTime:     "2019-10-01 10:00:00",
+		ExpiredTime:    "2019-10-12 10:00:00",
+		AcceptResponse: "",
+		Responses:      nil,
+	}
+
+	// create a request
+	request2 := service.Request{
+		RequestId:      "Request_002",
+		Owner:          "Sher",
+		Requirement:    "This is a test",
 		Reward:         1.0,
 		Status:         0,
 		CreateTime:     "2019-10-01 10:00:00",
@@ -101,6 +114,14 @@ func main() {
 
 	// push request
 	msg, err = serviceSetup.PushRequest(request1)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("Add Request successfully, transaction id is: ", msg)
+	}
+
+	// push request
+	msg, err = serviceSetup.PushRequest(request2)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {

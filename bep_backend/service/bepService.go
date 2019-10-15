@@ -45,7 +45,7 @@ func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 	}
 
 	request := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "PushResponse", Args: [][]byte{b, []byte(eventID)}}
-	respone, err := t.Client.Execute(request)
+	response, err := t.Client.Execute(request)
 	if err != nil {
 		return "", err
 	}
@@ -55,7 +55,7 @@ func (t *ServiceSetup) PushRespone(res Response) (string, error) {
 		return "", err
 	}
 
-	return string(respone.TransactionID), nil
+	return string(response.TransactionID), nil
 }
 
 func (t *ServiceSetup) AcceptResponse(userId string, requestId string, responseId string) (string, error) {
@@ -117,7 +117,6 @@ func (t *ServiceSetup) QueryRequestByUserId(userId string) (string, error) {
 	if err != nil {
 		return "", nil
 	}
-
 	return string(respone.Payload), nil
 }
 
@@ -145,6 +144,28 @@ func (t *ServiceSetup) QueryBalanceByUserId(userId string) ([]byte, error) {
 func (t *ServiceSetup) QueryResponseByRequestId(reqId string) (string, error) {
 
 	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByRequestId", Args: [][]byte{[]byte(reqId)}}
+	respone, err := t.Client.Query(req)
+	if err != nil {
+		return "", err
+	}
+
+	return string(respone.Payload), nil
+}
+
+func (t *ServiceSetup) QueryRequestByRequestId(reqId string) (string, error) {
+
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryRequestByRequestId", Args: [][]byte{[]byte(reqId)}}
+	respone, err := t.Client.Query(req)
+	if err != nil {
+		return "", err
+	}
+
+	return string(respone.Payload), nil
+}
+
+func (t *ServiceSetup) QueryResponseByResponseId(resId string) (string, error) {
+
+	req := channel.Request{ChaincodeID: t.ChaincodeID, Fcn: "QueryResponseByResponseId", Args: [][]byte{[]byte(resId)}}
 	respone, err := t.Client.Query(req)
 	if err != nil {
 		return "", err

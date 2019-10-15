@@ -17,12 +17,30 @@ const queryResponsesByRequestId = (requestId) => {
     return fetch_post_helper(url, body)
 }
 
-const pushResponse = (userId, requestId, answer) => {
+const queryReceivedResponsesByUserId = (userId) => {
+    const url = API_URLS.RESPONSE_QUERY_RECEIVED_RESPONSES_BY_USER_ID_URL
+    const body = JSON.stringify({
+        userId: userId,
+    })
+    return fetch_post_helper(url, body)
+}
+
+const pushResponse = (requestId, userId, answer) => {
     const url = API_URLS.RESPONSE_PUSH_RESPONSE_URL
+    const body = JSON.stringify({
+        requestId: requestId,
+        userId: userId,
+        answer: answer,
+    })
+    return fetch_post_helper(url, body)
+}
+
+const acceptResponse = (userId, requestId, responseId) => {
+    const url = API_URLS.USER_ACCPET_RESPONSE_URL
     const body = JSON.stringify({
         userId: userId,
         requestId: requestId,
-        answer: answer,
+        responseId: responseId,
     })
     return fetch_post_helper(url, body)
 }
@@ -31,5 +49,7 @@ const pushResponse = (userId, requestId, answer) => {
 export const responseServices = {
     queryResponsesByUserId,
     queryResponsesByRequestId,
+    queryReceivedResponsesByUserId,
     pushResponse,
+    acceptResponse,
 }

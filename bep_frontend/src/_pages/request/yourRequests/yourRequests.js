@@ -101,7 +101,7 @@ export function YourRequestsContent(props) {
                                     <TableCell align="right">{row.create_time}</TableCell>
                                     <TableCell align="right">{row.expired_time}</TableCell>
                                     <TableCell align="right">{row.status === 0 ? "Not Completed" : row.status === 1 ? "Completed" : "Expired"}</TableCell>
-                                    <TableCell align="right">{row.responses.length}</TableCell>
+                                    <TableCell align="right">{row.responses === null ? 0 : row.responses.length}</TableCell>
                                     <TableCell align="right">{row.accept_response_id}</TableCell>
                                 </TableRow>
                             ))}

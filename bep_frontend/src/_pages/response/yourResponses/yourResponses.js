@@ -88,19 +88,29 @@ export function YourResponsesContent(props) {
                             <TableCell align="right">Expire Date</TableCell>
                             <TableCell align="right">Status</TableCell>
                             <TableCell align="right">Response</TableCell>
+                            <TableCell align="right">Response Time</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
                             <TableRow key={row.name}>
                                 <TableCell component="th" scope="row">
-                                    {row.requestDesc}
+                                    {row.request.requirement}
                                 </TableCell>
-                                <TableCell align="right">{row.requestOwner}</TableCell>
-                                <TableCell align="right">{row.expired}</TableCell>
-                                <TableCell align="right">{row.status}</TableCell>
                                 <TableCell align="right">
-                                    11
+                                    {row.request.user_id}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {row.request.expired_time}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {row.request.status === 1 ? "Completed" : row.request.status === 0 ? "Waiting for answer" : "expired"}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {row.response.answer}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {row.response.create_time}
                                 </TableCell>
                             </TableRow>
                         ))}

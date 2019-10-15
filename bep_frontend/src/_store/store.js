@@ -10,6 +10,7 @@ let initialState = {
     "response": {
         "yourResponseRecords": [],
         "requestResponseRecords": [],
+        "requestAndResponsesRecords":[],
     },
     "user": {
         "userBalance": 0,

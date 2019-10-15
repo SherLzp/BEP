@@ -44,6 +44,27 @@ const queryRequestsByUserIdAsync = (userId) => {
     }
 }
 
+const pushRequest = (json) => {
+    return {
+        type: types.PUSH_REQUEST,
+        payload: json.data
+    }
+}
+
+const pushRequestAsync = (userId, requirement, reward, expiredTime) => {
+    return dispatch => {
+        dispatch(fetchBegin())
+        requestServices.pushRequest(userId, requirement, reward, expiredTime).then(
+            json => {
+                if (json.status === 0) {
+                    dispatch(fetchSuccess())
+                }
+                dispatch(pushRequest(json))
+            }
+        )
+    }
+}
+
 const fetchBegin = () => {
     return {
         type: FETCH_STATUS.FETCH_BEGIN,
@@ -66,4 +87,5 @@ const fetchFail = () => {
 export const requestActions = {
     showAllRequestsAsync,
     queryRequestsByUserIdAsync,
+    pushRequestAsync,
 }

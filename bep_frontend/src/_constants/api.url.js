@@ -1,5 +1,5 @@
-const SERVER = 'http://192.168.43.246:8080'
-
+//const SERVER = 'http://192.168.130.189:8080'
+const SERVER = 'http://192.168.0.176:8080'
 const BASE_URLS = {
     REQUEST: SERVER + '/request',
     RESPONSE: SERVER + '/response',
@@ -15,6 +15,7 @@ export const API_URLS = {
     // Response
     RESPONSE_QUERY_RESPONSES_BY_USER_ID_URL: BASE_URLS.RESPONSE + '/getResponseByUserId',
     RESPONSE_QUERY_RESPONSES_BY_REQUEST_ID_URL: BASE_URLS.RESPONSE + '/getResponseByRequestId',
+    RESPONSE_QUERY_RECEIVED_RESPONSES_BY_USER_ID_URL: BASE_URLS.RESPONSE + '/getUserRequestAndResponses',
     RESPONSE_PUSH_RESPONSE_URL: BASE_URLS.RESPONSE + '/pushResponse',
 
     //User

@@ -9,17 +9,6 @@ const getUserBalance = (userId) => {
     return fetch_post_helper(url, body)
 }
 
-const acceptResponse = (userId, requestId, responseId) => {
-    const url = API_URLS.USER_ACCPET_RESPONSE_URL
-    const body = JSON.stringify({
-        userId: userId,
-        requestId: requestId,
-        responseId: responseId,
-    })
-    return fetch_post_helper(url, body)
-}
-
 export const requestServices = {
     getUserBalance,
-    acceptResponse,
 }

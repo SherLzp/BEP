@@ -8,15 +8,15 @@ import (
 )
 
 type Request struct {
-	RequestId      string     `json:"request_id"`   // unique request id
-	Owner          string     `json:"user_id"`      // creator
-	Requirement    string     `json:"requirement"`  // your requirement
-	Reward         float64    `json:"reward"`       // the value of this question
-	Status         int        `json:"status"`       // 0-under going 1-success 2-failure
-	CreateTime     string     `json:"create_time"`  // request create time
-	ExpiredTime    string     `json:"expired_time"` // expire time
-	AcceptResponse string     `json:"accept_response_id"`
-	Responses      []Response `json:"responses"`
+	RequestId      string   `json:"request_id"`   // unique request id
+	Owner          string   `json:"user_id"`      // creator
+	Requirement    string   `json:"requirement"`  // your requirement
+	Reward         float64  `json:"reward"`       // the value of this question
+	Status         int      `json:"status"`       // 0-under going 1-success 2-failure
+	CreateTime     string   `json:"create_time"`  // request create time
+	ExpiredTime    string   `json:"expired_time"` // expire time
+	AcceptResponse string   `json:"accept_response_id"`
+	Responses      []string `json:"responses"`
 }
 
 type Response struct {

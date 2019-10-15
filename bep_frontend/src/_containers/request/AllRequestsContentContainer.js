@@ -1,6 +1,6 @@
 import { AllRequestsContent } from '../../_pages/request'
 import { connect } from 'react-redux'
-import { requestActions } from '../../_actions'
+import { requestActions, responseActions } from '../../_actions'
 
 const mapStateToProps = state => ({
     allRequestRecords: state.request.allRequestRecords,
@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
 // 注入到展示组件的props中的回调方法
 const mapDispatchToProps = dispatch => ({
     showAllRequestsAsync: () => dispatch(requestActions.showAllRequestsAsync()),
+    pushResponseAsync: (requestId, userId, answer) => dispatch(responseActions.pushResponseAsync(requestId, userId, answer)),
 })
 
 // 连接到展示组件

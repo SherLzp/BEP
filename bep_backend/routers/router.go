@@ -16,4 +16,5 @@ func init() {
 	beego.Router("/request/getRequestByUserId", &controllers.BepController{}, "post:GetRequestByUserId")
 	beego.Router("/response/getResponseByUserId", &controllers.BepController{}, "post:GetResponseByUserId")
 	beego.Router("/response/getResponseByRequestId", &controllers.BepController{}, "post:GetResponseByRequestId")
+	beego.Router("/response/getUserRequestAndResponses", &controllers.BepController{}, "post:GetUserRequestAndResponses")
 }
