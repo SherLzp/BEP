@@ -3,3 +3,7 @@
 #*/vendor
 __pycache__
 .DS_Store
+BEP
+go.mod
+go.sum
+vendor/
