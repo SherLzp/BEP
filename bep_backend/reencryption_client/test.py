@@ -1,45 +1,79 @@
-from umbral import config
-from umbral.curve import SECP256K1
+import requests as req
+import json
 
-config.set_default_curve(SECP256K1)
-from umbral import keys, signing
+base_url = "http://127.0.0.1:5000"
+def generate_keys():
+    path = "/generateKeys"
+    url = base_url + path
+    r = req.get(url)
+    return json.loads(r.text)
 
-alices_private_key = keys.UmbralPrivateKey.gen_key()
-alices_public_key = alices_private_key.get_pubkey()
+def encrypt_msg(msg, privkey):
+    path = "/encryptData"
+    url = base_url + path
+    payload = {
+            "msg": msg,
+            "private_key": privkey
+    }
+    r = req.post(url, data = json.dumps(payload))
+    return json.loads(r.text)
 
-alices_signing_key = keys.UmbralPrivateKey.gen_key()
-alices_verifying_key = alices_signing_key.get_pubkey()
-alices_signer = signing.Signer(private_key=alices_signing_key)
+def generate_kfrags(privkey, signkey, recv_pubkey, threshold, N):
+    path = "/generateKfrags"
+    url = base_url + path
+    payload = {
+            "private_key": privkey,
+            "signing_key": signkey,
+            "receiving_pubkey": recv_pubkey,
+            "threshold": threshold,
+            "n": N,
+    }
+    r = req.post(url, data = json.dumps(payload))
+    return json.loads(r.text)['kfrags']
+    
+def reencrypt(pubkey, verikey, recv_pubkey, kfrags_list, capsule):
+    path = "/reencrypt"
+    url = base_url + path
+    payload = {
+            "public_key": pubkey,
+            "verifying_key": verikey,
+            "receiving_pubkey": recv_pubkey,
+            "kfrags": kfrags_list,
+            "capsule": capsule,
+    }
+    r = req.post(url, data = json.dumps(payload))
+    return json.loads(r.text)
 
-from umbral import pre
+def decrypt(pubkey, verikey, recv_privkey, ciphertext, cfrags_list, capsule):
+    path = "/decrypt"
+    url = base_url + path
+    payload = {
+            "public_key": pubkey, 
+            "verifying_key": verikey,
+            "receiving_privkey": recv_privkey,
+            "ciphertext": ciphertext,
+            "cfrags": cfrags_list,
+            "capsule": capsule,
+    }
+    r = req.post(url, data = json.dumps(payload))
+    return r.text
 
-plaintext = b'Proxy Re-encryption is cool!'
-ciphertext, capsule = pre.encrypt(alices_public_key, plaintext)
+if __name__ == '__main__':
+    alice_key = generate_keys()
+    alice_sign = generate_keys()
+    bob_key = generate_keys()
+    
+    msg = "hello world"
+    enc = encrypt_msg(msg, alice_key['private_key'])
+    ciphertext = enc['ciphertext']
+    capsule = enc['capsule']
+    
+    kfrags_list = generate_kfrags(alice_key['private_key'], alice_sign['private_key'], bob_key['public_key'], threshold = 1, N = 2)
+    
+    cfrags = reencrypt(alice_key['public_key'], alice_sign['public_key'], bob_key['public_key'], kfrags_list, capsule)
 
-from umbral import keys
-
-bobs_private_key = keys.UmbralPrivateKey.gen_key()
-bobs_public_key = bobs_private_key.get_pubkey()
-kfrags = pre.generate_kfrags(delegating_privkey=alices_private_key,
-                             signer=alices_signer,
-                             receiving_pubkey=bobs_public_key,
-                             threshold=10,
-                             N=20)
-import random
-
-kfrags = random.sample(kfrags, 10)
-capsule.set_correctness_keys(delegating=alices_public_key,
-                             receiving=bobs_public_key,
-                             verifying=alices_verifying_key)
-cfrags = list()
-for kfrag in kfrags:
-    cfrag = pre.reencrypt(kfrag=kfrag, capsule=capsule)
-    cfrags.append(cfrag)
-
-# capsule.set_correctness_keys(delegating=alices_public_key,receiving=bobs_public_key,verifying=alices_verifying_key)
-for cfrag in cfrags:
-    capsule.attach_cfrag(cfrag)
-cleartext = pre.decrypt(ciphertext=ciphertext,
-                        capsule=capsule,
-                        decrypting_key=bobs_private_key)
-print(cleartext)
+    decrypted_msg = decrypt(alice_key['public_key'], alice_sign['public_key'], bob_key['private_key'], ciphertext, cfrags, capsule)
+    if decrypted_msg == msg:
+        print("test case passed")
+    else:
+        print("test case failed")

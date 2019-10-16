@@ -6,82 +6,46 @@ import json
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-
-@app.route('/')
-def hello_world():
-    return 'Hello World'
-
-
-@app.route('/gen_key', methods=["POST"])
+@app.route('/generateKeys', methods=["GET"])
 def gen_key():
-    print('gen_key:调用成功')
-    params = json.loads(request.get_data(as_text=True))
-    print(params['account'])
-    return re_encryption.ReEncryption.generateKeys(params['account'])
+    res = re_encryption.ReEncryption.generateKeys()
+    return json.dumps(res)
 
-
-@app.route('/uploadData', methods=["POST"])
+@app.route('/encryptData', methods=["POST"])
 def upload():
-    print('upload:调用成功')
     params = json.loads(request.get_data(as_text=True))
-    print(params)
-    account = params['account']
-    return re_encryption.ReEncryption.encryptInfo(account)
+    res = re_encryption.ReEncryption.encryptInfo(params['msg'], params['private_key'])
+    return json.dumps(res)
 
 
 @app.route('/generateKfrags', methods=["POST"])
 def generateKfrags():
-    print('generate Kfrags:调用成功')
     params = json.loads(request.get_data(as_text=True))
-    print(params)
-    account = params['account']
-    access_pub_key = params['access_pub_key']
-    return re_encryption.ReEncryption.generateKfrags(account, access_pub_key)
+    res = re_encryption.ReEncryption.generateKfrags(params['private_key'], params['signing_key'], params['receiving_pubkey'], int(params['threshold']), int(params['n']))
+    return json.dumps(res)
 
-
-@app.route('/reencryption', methods=["POST"])
+@app.route('/reencrypt', methods=["POST"])
 def reencryption():
-    print('reencryption:调用成功')
     params = json.loads(request.get_data(as_text=True))
-    print(params)
-    a_pub_key_bytes = params['a_pub_key'].encode('iso-8859-15')
-    a_ver_key_bytes = params['a_ver_key'].encode('iso-8859-15')
-    b_pub_key_bytes = params['b_pub_key'].encode('iso-8859-15')
+    pubkey = params['public_key']
+    verikey = params['verifying_key']
+    recv_pubkey = params['receiving_pubkey']
     kfrags_list = params['kfrags']
-    kfrags_bytes = {}
-    for v in kfrags_list:
-        kfrags_bytes.push(v.encode('iso-8859-15'))
-    capsule_bytes = params['capsule'].encode('iso-8859-15')
-    return re_encryption.ReEncryption.reencryption(a_pub_key_bytes, a_ver_key_bytes, b_pub_key_bytes, kfrags_bytes,
-                                                   capsule_bytes)
-
+    capsule = params['capsule']
+    res = re_encryption.ReEncryption.reencrypt(pubkey, verikey, recv_pubkey, kfrags_list, capsule)
+    return json.dumps(res)
 
 @app.route('/decrypt', methods=["POST"])
 def decrypt():
-    print('decrypt:调用成功')
     params = json.loads(request.get_data(as_text=True))
-    print(params)
-    account = params['account']
-    a_pub_key_bytes = params['a_pub_key'].encode('iso-8859-15')
-    a_ver_key_bytes = params['a_ver_key'].encode('iso-8859-15')
-    ciphertext = params['ciphertext'].encode('iso-8859-15')
-    cfrags_bytes = params['cfrags'].encode('iso-8859-15')
-    capsule_bytes = params['capsule'].encode('iso-8859-15')
-    return re_encryption.ReEncryption.decrypt(account, a_pub_key_bytes, a_ver_key_bytes, ciphertext, cfrags_bytes,
-                                              capsule_bytes)
-
-
-@app.route('/getData', methods=["POST"])
-def getData():
-    print('getData:调用成功')
-    params = json.loads(request.get_data(as_text=True))
-    print(params)
-    owner = params['owner']
-    reader = params['reader']
-    ciphertext = params['ciphertext'].encode('iso-8859-15')
-    capsule_bytes = params['capsule'].encode('iso-8859-15')
-    return re_encryption.ReEncryption.getData(owner, reader, ciphertext, capsule_bytes)
-
+    pubkey = params['public_key']
+    verikey = params['verifying_key']
+    recv_privkey = params['receiving_privkey']
+    ciphertext = params['ciphertext']
+    cfrags_list = params['cfrags']
+    capsule = params['capsule']
+    res = re_encryption.ReEncryption.decrypt(pubkey, verikey, recv_privkey, ciphertext, cfrags_list, capsule)
+    return res
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
