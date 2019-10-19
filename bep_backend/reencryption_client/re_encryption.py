@@ -13,7 +13,7 @@ def hex2bytes(hex_str):
 
 class ReEncryption:
 
-    def generateKeys() -> bytes:
+    def generateKey() -> bytes:
         private_key = keys.UmbralPrivateKey.gen_key()
         public_key = private_key.get_pubkey()
         res = {}

@@ -6,9 +6,9 @@ import json
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-@app.route('/generateKeys', methods=["GET"])
+@app.route('/generateKey', methods=["GET"])
 def gen_key():
-    res = re_encryption.ReEncryption.generateKeys()
+    res = re_encryption.ReEncryption.generateKey()
     return json.dumps(res)
 
 @app.route('/encryptData', methods=["POST"])
