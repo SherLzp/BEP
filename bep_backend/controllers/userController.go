@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"encoding/json"
+	"net/http"
 	"github.com/BEP/bep_backend/models"
 	"github.com/astaxie/beego/orm"
 )
@@ -63,7 +65,6 @@ const (
 
 func (this *UserController) GenerateKeypair() {
 	// call http://127.0.0.1:5000/generateKey
-	//url := pre_url + "/generateKey"
 	email := this.Ctx.GetCookie("email")
 	password := this.Ctx.GetCookie("password")
 	username := this.Ctx.GetCookie("username")
@@ -72,8 +73,50 @@ func (this *UserController) GenerateKeypair() {
 	fmt.Println(user)
 
 	// generate key 
+	url := pre_url + "/generateKey"
+	res, err := http.Get(url)
+	if err != nil {
+		this.Error(UNKNOWN, "generate key error", err)
+		return
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		this.Error(UNKNOWN, "read http response body error", err)
+		return
+	}
 
-	// save keypair to database
+	var keypair models.Keypair
+	err = json.Unmarshal(body, &keypair)
+	if err != nil {
+		this.Error(UNKNOWN, "parse json error", err)
+		return
+	}
 
-	this.Success(user, "generate keypair success")
+	o := orm.NewOrm()
+	err = o.Read(&user, "Email")
+	if err != nil {
+		this.Error(UNKNOWN, "user not found", err)
+		return
+	}
+
+	keypair.User = &user
+	_, err = o.Insert(&keypair)
+	if err != nil {
+		this.Error(UNKNOWN, "failed to save keypair", err)
+		return
+	}
+
+	if o.Read(&user, "Email") == nil {
+		user.Keypairs = append(user.Keypairs, &keypair)
+		if _, err := o.Update(&user); err != nil {
+			this.Error(UNKNOWN, "update user table error", err)
+			return
+		}
+	} else {
+		this.Error(UNKNOWN, "user not found", err)
+		return
+	}
+
+	this.Success(0, "generate keypair success")
 }

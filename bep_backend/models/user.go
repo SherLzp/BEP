@@ -15,8 +15,8 @@ type User struct {
 
 type Keypair struct {
 	Id int64 `orm:"pk;auto" json:"id"`
-	Pubkey string `orm:"unique" json:"pubkey"`
-	Privkey string `json:"privkey"`
+	Pubkey string `orm:"unique" json:"public_key"`
+	Privkey string `json:"private_key"`
 	User *User `orm:"rel(fk)" json:"user"`
 }
 
