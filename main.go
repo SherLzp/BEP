@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/BEP/bep_backend/handler"
+	"github.com/BEP/bep_backend/models"
+	"github.com/astaxie/beego/orm"
+	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/BEP/bep_backend/routers"
 	"github.com/BEP/bep_backend/service"
 	"github.com/BEP/sdkInit"
@@ -16,6 +19,16 @@ const (
 	initialized = false
 	BepCC       = "bepcc"
 )
+
+func init() {
+	orm.RegisterDataBase("default", "sqlite3", "data.db")
+	orm.RegisterModel(new(models.User))
+	orm.RegisterModel(new(models.Keypair))
+	err := orm.RunSyncdb("default", false, true)
+	if err != nil {
+		beego.Error(err)
+	}
+}
 
 func main() {
 	initInfo := &sdkInit.InitInfo{

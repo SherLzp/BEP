@@ -7,3 +7,4 @@ BEP
 go.mod
 go.sum
 vendor/
+data.db

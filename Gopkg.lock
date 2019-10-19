@@ -10,6 +10,26 @@
   version = "v3.0.0"
 
 [[projects]]
+  digest = "1:b7070c7f5878f15a3737c6d6e122d3ca4a2da9ac84d1b3cc6e27707e69e51e2d"
+  name = "github.com/astaxie/beego"
+  packages = [
+    ".",
+    "config",
+    "context",
+    "context/param",
+    "grace",
+    "logs",
+    "orm",
+    "plugins/cors",
+    "session",
+    "toolbox",
+    "utils",
+  ]
+  pruneopts = ""
+  revision = "32ee728078c84c28f2642c70745afc8f6830044d"
+  version = "v1.12.0"
+
+[[projects]]
   digest = "1:87021a8fd708a9c4dd48a441cc2dace8063f2c1f5d67699ba6f1f93b548e4a33"
   name = "github.com/cloudflare/cfssl"
   packages = [
@@ -240,6 +260,14 @@
   version = "v1.8.1"
 
 [[projects]]
+  digest = "1:cd4379452cc81f79acc16c477a1d1d7c2bf5807697f6cf3aafe221c4fbfed4ce"
+  name = "github.com/mattn/go-sqlite3"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b612a2feea6aa87c6d052d9086572551df06497e"
+  version = "v1.11.0"
+
+[[projects]]
   branch = "master"
   digest = "1:bcc46a0fbd9e933087bef394871256b5c60269575bb661935874729c65bbbf60"
   name = "github.com/mitchellh/mapstructure"
@@ -270,6 +298,22 @@
   pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:47081c00d00c1dfc9a530c2556e78be391a5c24db1043efe6d406af882a169a1"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d0148ccd69edc991a8e0e472ae9720f5b46209e12a00c0ba11b4cbcc4fc2c72b"
+  name = "github.com/shiena/ansicolor"
+  packages = ["."]
+  pruneopts = ""
+  revision = "a422bbe96644373c5753384a59d678f7d261ff10"
 
 [[projects]]
   digest = "1:956f655c87b7255c6b1ae6c203ebb0af98cf2a13ef2507e34c9bf1c0332ac0f5"
@@ -335,6 +379,8 @@
   digest = "1:b4305df2444548cf8f171cd377e19bc7021eaa195aaa78367b3a371d2d6b9ae1"
   name = "golang.org/x/crypto"
   packages = [
+    "acme",
+    "acme/autocert",
     "cryptobyte",
     "cryptobyte/asn1",
     "ocsp",
@@ -459,6 +505,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/astaxie/beego",
+    "github.com/astaxie/beego/orm",
+    "github.com/astaxie/beego/plugins/cors",
     "github.com/hyperledger/fabric-sdk-go/pkg/client/channel",
     "github.com/hyperledger/fabric-sdk-go/pkg/client/msp",
     "github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt",
@@ -469,6 +518,8 @@
     "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager",
     "github.com/hyperledger/fabric-sdk-go/pkg/fabsdk",
     "github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl",
+    "github.com/mattn/go-sqlite3",
+    "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

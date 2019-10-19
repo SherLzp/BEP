@@ -4,6 +4,9 @@ all: clean build env-up run
 
 dev: build run
 
+restart: env-down build env-up
+	./BEP
+
 ##### BUILD
 build:
 	@echo "Build ..."

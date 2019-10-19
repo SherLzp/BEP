@@ -71,6 +71,7 @@ func (app *Application) GetAllRequests() ([]service.Request, error) {
 	}
 	return allRequests, nil
 }
+
 func (app *Application) GetRequestByUserId(userId string) ([]service.Request, error) {
 	response, err := app.Setup.QueryRequestByUserId(userId)
 	if err != nil {
@@ -83,6 +84,7 @@ func (app *Application) GetRequestByUserId(userId string) ([]service.Request, er
 	}
 	return requests, nil
 }
+
 func (app *Application) PushResponse(requestId string, owner string, answer string) (string, error) {
 	u1, _ := uuid.NewV4()
 	responseId := u1.String()
@@ -101,6 +103,7 @@ func (app *Application) PushResponse(requestId string, owner string, answer stri
 	}
 	return tranId, nil
 }
+
 func (app *Application) GetResponseByUserId(userId string) ([]models.YourResponse, error) {
 	response, err := app.Setup.QueryResponseByUserId(userId)
 	if err != nil {

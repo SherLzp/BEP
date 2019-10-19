@@ -34,6 +34,7 @@ type BaseController struct {
 func (this *BaseController) RequestBody() []byte {
 	return this.Ctx.Input.RequestBody
 }
+
 func (this *BaseController) decodeRawRequestBodyJson() map[string]interface{} {
 	var mm interface{}
 	requestBody := make(map[string]interface{})
