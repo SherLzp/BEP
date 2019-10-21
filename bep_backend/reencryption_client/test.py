@@ -3,7 +3,7 @@ import json
 
 base_url = "http://127.0.0.1:5000"
 def generate_keys():
-    path = "/generateKeys"
+    path = "/generateKey"
     url = base_url + path
     r = req.get(url)
     return json.loads(r.text)
@@ -62,17 +62,29 @@ if __name__ == '__main__':
     alice_key = generate_keys()
     alice_sign = generate_keys()
     bob_key = generate_keys()
+
+    print("alice_key:", alice_key)
     
     msg = "hello world"
     enc = encrypt_msg(msg, alice_key['private_key'])
     ciphertext = enc['ciphertext']
     capsule = enc['capsule']
+
+    print("original_msg:", msg)
+    print("encrypted_data:", enc)
     
     kfrags_list = generate_kfrags(alice_key['private_key'], alice_sign['private_key'], bob_key['public_key'], threshold = 1, N = 2)
     
+    print("kfrags_list:", kfrags_list)
+
     cfrags = reencrypt(alice_key['public_key'], alice_sign['public_key'], bob_key['public_key'], kfrags_list, capsule)
 
+    print("cfrags:", cfrags)
+
     decrypted_msg = decrypt(alice_key['public_key'], alice_sign['public_key'], bob_key['private_key'], ciphertext, cfrags, capsule)
+
+    print("decrypted_msg:", decrypted_msg)
+
     if decrypted_msg == msg:
         print("test case passed")
     else:
